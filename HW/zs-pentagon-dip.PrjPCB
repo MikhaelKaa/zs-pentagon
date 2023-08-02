@@ -361,6 +361,23 @@ GenerateClassCluster=0
 DocumentUniqueId=JNMANLEA
 
 [Document20]
+DocumentPath=src\zs-pentagon-dip_1.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=FAQNOIVM
+
+[Document21]
 DocumentPath=src\zs-pentagon-dip.PcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -377,7 +394,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=DNRGLKKP
 
-[Document21]
+[Document22]
 DocumentPath=altium_libs\Oscillators.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -394,7 +411,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=NNMXKVQV
 
-[Document22]
+[Document23]
 DocumentPath=altium_libs\Oscillators.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -411,7 +428,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=TVDOICYP
 
-[Document23]
+[Document24]
 DocumentPath=altium_libs\Transistors.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -428,7 +445,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=PZISWKYS
 
-[Document24]
+[Document25]
 DocumentPath=altium_libs\Transistors.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -445,7 +462,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YBFWTSXR
 
-[Document25]
+[Document26]
 DocumentPath=altium_libs\Diodes.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -462,7 +479,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VHRVPWVU
 
-[Document26]
+[Document27]
 DocumentPath=altium_libs\Diodes.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
