@@ -344,13 +344,13 @@ GenerateClassCluster=0
 DocumentUniqueId=JNMQFGDO
 
 [Document19]
-DocumentPath=src\zs-pentagon-dip_0.SchDoc
+DocumentPath=src\zs-pentagon-dip_1.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=0
+AnnotateOrder=-1
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -361,7 +361,7 @@ GenerateClassCluster=0
 DocumentUniqueId=JNMANLEA
 
 [Document20]
-DocumentPath=src\zs-pentagon-dip_1.SchDoc
+DocumentPath=src\zs-pentagon-dip_2.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
