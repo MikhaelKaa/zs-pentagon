@@ -395,23 +395,6 @@ GenerateClassCluster=0
 DocumentUniqueId=DTQZALPZ
 
 [Document22]
-DocumentPath=src\zs-pentagon-dip.PcbDoc
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=DNRGLKKP
-
-[Document23]
 DocumentPath=altium_libs\Oscillators.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -428,7 +411,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=NNMXKVQV
 
-[Document24]
+[Document23]
 DocumentPath=altium_libs\Oscillators.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -445,7 +428,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=TVDOICYP
 
-[Document25]
+[Document24]
 DocumentPath=altium_libs\Transistors.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -462,7 +445,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=PZISWKYS
 
-[Document26]
+[Document25]
 DocumentPath=altium_libs\Transistors.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -479,7 +462,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YBFWTSXR
 
-[Document27]
+[Document26]
 DocumentPath=altium_libs\Diodes.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -496,7 +479,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VHRVPWVU
 
-[Document28]
+[Document27]
 DocumentPath=altium_libs\Diodes.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -512,6 +495,40 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=MVBDRPXT
+
+[Document28]
+DocumentPath=src\zs-pentagon-dip_4.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=EDXCVONS
+
+[Document29]
+DocumentPath=src\zs-pentagon-dip.PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=DNRGLKKP
 
 [Configuration1]
 Name=Sources
