@@ -514,6 +514,23 @@ GenerateClassCluster=0
 DocumentUniqueId=EDXCVONS
 
 [Document29]
+DocumentPath=src\zs-pentagon-dip_5.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=LLFHHMMM
+
+[Document30]
 DocumentPath=src\zs-pentagon-dip.PcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
