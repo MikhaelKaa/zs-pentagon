@@ -53,3 +53,10 @@ dkms.conf
 __Previews
 /HW/History
 *.log
+*.done
+*.tmp
+*.vcd
+/CPLD/epm3256_igp_v/incremental_db
+/CPLD/epm3256_igp_v/db
+/CPLD/epm3256_igp_v/build
+*.bak

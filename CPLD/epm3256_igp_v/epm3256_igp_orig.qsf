@@ -1,0 +1,178 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition
+# Date created = 22:07:41  November 23, 2022
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		epm3256_igp_orig_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY MAX3000A
+set_global_assignment -name DEVICE "EPM3256AQC208-10"
+set_global_assignment -name TOP_LEVEL_ENTITY epm3256_igp_orig
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:07:41  NOVEMBER 23, 2022"
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY build
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name MAX7000_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_location_assignment PIN_99 -to C_IODOS
+set_location_assignment PIN_98 -to A[6]
+set_location_assignment PIN_97 -to A[7]
+set_location_assignment PIN_96 -to CPU_M1
+set_location_assignment PIN_95 -to A[5]
+set_location_assignment PIN_93 -to CPU_RFSH
+set_location_assignment PIN_92 -to A[4]
+set_location_assignment PIN_91 -to A[8]
+set_location_assignment PIN_90 -to CS_ROM
+set_location_assignment PIN_9 -to KBD_CLK
+set_location_assignment PIN_89 -to A[10]
+set_location_assignment PIN_87 -to A[11]
+set_location_assignment PIN_86 -to A[9]
+set_location_assignment PIN_81 -to MA[2]
+set_location_assignment PIN_79 -to MA[1]
+set_location_assignment PIN_78 -to MA[10]
+set_location_assignment PIN_77 -to MA[3]
+set_location_assignment PIN_76 -to MA[4]
+set_location_assignment PIN_71 -to MA[5]
+set_location_assignment PIN_70 -to MA[9]
+set_location_assignment PIN_7 -to HS
+set_location_assignment PIN_69 -to MA[6]
+set_location_assignment PIN_68 -to MA[8]
+set_location_assignment PIN_67 -to MA[7]
+set_location_assignment PIN_66 -to MA[13]
+set_location_assignment PIN_65 -to MA[12]
+set_location_assignment PIN_61 -to MD[4]
+set_location_assignment PIN_60 -to MD[6]
+set_location_assignment PIN_59 -to MD[5]
+set_location_assignment PIN_58 -to ROM_A15
+set_location_assignment PIN_55 -to RD_1F
+set_location_assignment PIN_48 -to WR_RAM
+set_location_assignment PIN_73 -to MA[11]
+set_location_assignment PIN_49 -to MA[14]
+set_location_assignment PIN_47 -to MA[16]
+set_location_assignment PIN_44 -to MA[15]
+set_location_assignment PIN_43 -to MA[0]
+set_location_assignment PIN_42 -to MD[7]
+set_location_assignment PIN_4 -to VGA[1]
+set_location_assignment PIN_39 -to RD_ROM
+set_location_assignment PIN_37 -to MD[0]
+set_location_assignment PIN_36 -to ROM_A14
+set_location_assignment PIN_35 -to MD[1]
+set_location_assignment PIN_33 -to MD[2]
+set_location_assignment PIN_31 -to WR_ROM
+set_location_assignment PIN_3 -to KBD_DI
+set_location_assignment PIN_27 -to MD[3]
+set_location_assignment PIN_206 -to VGA[0]
+set_location_assignment PIN_204 -to VGA[7]
+set_location_assignment PIN_203 -to C_MAGIC
+set_location_assignment PIN_202 -to VGA[6]
+set_location_assignment PIN_199 -to VGA[5]
+set_location_assignment PIN_197 -to VGA[4]
+set_location_assignment PIN_195 -to VGA[3]
+set_location_assignment PIN_193 -to VGA[2]
+set_location_assignment PIN_188 -to SGI
+set_location_assignment PIN_184 -to CLK_14MHZ
+set_location_assignment PIN_183 -to CPU_WR
+set_location_assignment PIN_182 -to CPU_RESET
+set_location_assignment PIN_181 -to CPU_MREQ
+set_location_assignment PIN_18 -to KBD_CS
+set_location_assignment PIN_178 -to TAPE_IN
+set_location_assignment PIN_177 -to AYCLK
+set_location_assignment PIN_175 -to D[2]
+set_location_assignment PIN_173 -to D[0]
+set_location_assignment PIN_172 -to C_BLK
+set_location_assignment PIN_171 -to A[12]
+set_location_assignment PIN_170 -to TAPE_OUT
+set_location_assignment PIN_169 -to BDIR
+set_location_assignment PIN_168 -to BEEP
+set_location_assignment PIN_167 -to BC1
+set_location_assignment PIN_166 -to A[15]
+set_location_assignment PIN_164 -to A[14]
+set_location_assignment PIN_163 -to A[13]
+set_location_assignment PIN_162 -to VWR
+set_location_assignment PIN_161 -to D[7]
+set_location_assignment PIN_160 -to VA[13]
+set_location_assignment PIN_159 -to C_DOS
+set_location_assignment PIN_154 -to VA[8]
+set_location_assignment PIN_153 -to D[1]
+set_location_assignment PIN_151 -to D[5]
+set_location_assignment PIN_150 -to D[6]
+set_location_assignment PIN_149 -to VA[14]
+set_location_assignment PIN_148 -to VA[9]
+set_location_assignment PIN_147 -to VA[12]
+set_location_assignment PIN_145 -to VA[7]
+set_location_assignment PIN_144 -to VA[11]
+set_location_assignment PIN_141 -to VA[6]
+set_location_assignment PIN_140 -to A[0]
+set_location_assignment PIN_139 -to VA[5]
+set_location_assignment PIN_138 -to A[1]
+set_location_assignment PIN_137 -to VA[4]
+set_location_assignment PIN_135 -to VA[3]
+set_location_assignment PIN_133 -to A[2]
+set_location_assignment PIN_132 -to VA[2]
+set_location_assignment PIN_131 -to A[3]
+set_location_assignment PIN_130 -to D[3]
+set_location_assignment PIN_129 -to D[4]
+set_location_assignment PIN_128 -to CPU_CLK
+set_location_assignment PIN_126 -to C_IORQGE
+set_location_assignment PIN_124 -to VA[1]
+set_location_assignment PIN_122 -to VA[0]
+set_location_assignment PIN_117 -to CPU_INT
+set_location_assignment PIN_111 -to CPU_IORQ
+set_location_assignment PIN_109 -to CPU_BUSRQ
+set_location_assignment PIN_102 -to CPU_RD
+set_location_assignment PIN_101 -to CPU_WAIT
+set_location_assignment PIN_100 -to CPU_NMI
+set_location_assignment PIN_10 -to VS
+set_location_assignment PIN_120 -to VD[0]
+set_location_assignment PIN_118 -to VD[1]
+set_location_assignment PIN_115 -to VD[2]
+set_location_assignment PIN_114 -to VD[3]
+set_location_assignment PIN_112 -to VD[4]
+set_location_assignment PIN_110 -to VD[5]
+set_location_assignment PIN_136 -to VA[10]
+set_location_assignment PIN_13 -to EXT2
+set_global_assignment -name VERILOG_FILE video.v
+set_global_assignment -name VERILOG_FILE pent_logic_1.v
+set_global_assignment -name VERILOG_FILE pent_log.v
+set_global_assignment -name VERILOG_FILE pent_logic_0.v
+set_global_assignment -name VERILOG_FILE logic74.v
+set_global_assignment -name VERILOG_FILE epm3256_igp_orig.v
+set_global_assignment -name VERILOG_FILE pent_gen.v
+set_location_assignment PIN_38 -to CS_RAM0
+set_location_assignment PIN_80 -to CS_RAM1
+set_location_assignment PIN_45 -to MA[17]
+set_location_assignment PIN_46 -to MA[18]
+set_location_assignment PIN_17 -to EXT3
