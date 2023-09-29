@@ -60,3 +60,6 @@ __Previews
 /CPLD/epm3256_igp_v/db
 /CPLD/epm3256_igp_v/build
 *.bak
+output_files
+db
+incremental_db
