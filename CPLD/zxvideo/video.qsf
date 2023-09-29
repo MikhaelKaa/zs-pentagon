@@ -68,3 +68,13 @@ set_location_assignment PIN_117 -to G
 set_location_assignment PIN_113 -to B
 set_location_assignment PIN_102 -to I
 set_location_assignment PIN_97 -to test
+set_location_assignment PIN_95 -to WR
+set_location_assignment PIN_92 -to IORQ
+set_location_assignment PIN_90 -to D[0]
+set_location_assignment PIN_88 -to D[1]
+set_location_assignment PIN_86 -to D[2]
+set_location_assignment PIN_87 -to D[3]
+set_location_assignment PIN_89 -to C7
+set_location_assignment PIN_91 -to C5
+set_location_assignment PIN_93 -to BL
+set_location_assignment PIN_96 -to A0

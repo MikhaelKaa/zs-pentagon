@@ -3,7 +3,17 @@ input CLK,
 input RESET,
 input [7:0] Q,
 input C17, C3, C18, C1, C2,
+
+input [3:0] D,
+input WR,
+input A0,
+input IORQ,
+input BL,
+input C5,
+input C7,
+
 output R, G, B, I,
+
 output test
 
 );
@@ -31,12 +41,21 @@ end
 
 //kp2 DD46()
 
-assign R = DD42_Q[3];
-assign G = C1;//DD41_Q[2];
-assign B = C2;//DD41_Q[1];
-assign I = C18;//DD41_Q[0];
+assign R = DD43[0];//DD42_Q[3];
+assign G = WR;//DD43[1];//C1;//DD41_Q[2];
+assign B = A0;//DD43[2];//C2;//DD41_Q[1];
+assign I = IORQ;//DD43[3];//C18;//DD41_Q[0];
 
 assign test = flash_cnt[23];
+
+
+//////////////////////////////////////////////////////////
+wire A0_port = ~(WR | A0 | IORQ);
+reg  [3:0] DD43 = 4'b0;
+always @(negedge A0_port) begin
+	DD43 <= D;
+end
+
 
 endmodule
 
