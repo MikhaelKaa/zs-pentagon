@@ -41,20 +41,39 @@ end
 
 //kp2 DD46()
 
-assign R = DD43[0];//DD42_Q[3];
-assign G = WR;//DD43[1];//C1;//DD41_Q[2];
-assign B = A0;//DD43[2];//C2;//DD41_Q[1];
-assign I = IORQ;//DD43[3];//C18;//DD41_Q[0];
+assign R = DD46_by;
+assign G = DD47_ay;
+assign B = ;
+assign I = DD47_by;
 
 assign test = flash_cnt[23];
-
+wire flash;
+assign flash = flash_cnt[23];
 
 //////////////////////////////////////////////////////////
-wire A0_port = ~(WR | A0 | IORQ);
+wire A0_port;
+assign A0_port = ~(WR | A0 | IORQ);
 reg  [3:0] DD43 = 4'b0;
-always @(negedge A0_port) begin
+always @(posedge A0_port) begin
 	DD43 <= D;
 end
+wire K9, K10, K11;
+assign K9 = DD43[0];
+assign K10 = DD43[1];
+assign K11 = DD43[2];
+
+/////////////////////////////////////
+wire DD46_ay, DD46_by;
+wire DD47_ay, DD47_by;
+kp2 DD46(.A({K9, K9, DD40_Q[3] ,DD40_Q[0]}), .B({K10, K10, DD40_Q[4], DD40_Q[1]}), .S1(pix), .S2(C5), .EA(BL), .
+(BL), .AY(DD46_ay), .BY(DD46_by));
+kp2 DD47(.A({K11, K11, DD40_Q[5] ,DD40_Q[2]}), .B({1'b0, 1'b0, DD40_Q[6], DD40_Q[6]}), .S1(pix), .S2(C5), .EA(BL), .EB(BL), .AY(DD47_ay), .BY(DD47_by));
+
+/////////////////////////////////////
+wire pix;
+assign pix = dd6_11;
+	wire dd7_11 = ~(DD40_Q[7] & flash);
+	wire dd6_11 = dd7_11 ^ DD42_Q[3];
 
 
 endmodule
@@ -87,8 +106,8 @@ reg [3:0] data = 4'b0;
 assign Q = OE?(data):(4'bz);
 endmodule
 
-////// KP2
-module kp2(
+///////////////////////////// KP2
+/*module kp2(
 input [3:0] A,
 input EA,
 input [3:0] B,
@@ -111,36 +130,22 @@ end
 assign AY = Ad;
 assign BY = Bd;
 
-endmodule
-// Dual 4-input multiplexer
-
-/*module kp2 #(parameter BLOCKS = 2, WIDTH_IN = 4, WIDTH_SELECT = $clog2(WIDTH_IN),
-                   DELAY_RISE = 0, DELAY_FALL = 0)
-(
-  input [BLOCKS-1:0] Enable_bar,
-  input [WIDTH_SELECT-1:0] Select,
-  input [BLOCKS*WIDTH_IN-1:0] A_2D,
-  output [BLOCKS-1:0] Y
-);
-
-//------------------------------------------------//
-wire [WIDTH_IN-1:0] A [0:BLOCKS-1];
-reg [BLOCKS-1:0] computed;
-integer i;
-
-always @(*)
-begin
-  for (i = 0; i < BLOCKS; i++)
-  begin
-    if (!Enable_bar[i])
-      computed[i] = A[i][Select];
-    else
-      computed[i] = 1'b0;
-  end
-end
-//------------------------------------------------//
-
-//`ASSIGN_UNPACK_ARRAY(BLOCKS, WIDTH_IN, A, A_2D)
-assign #(DELAY_RISE, DELAY_FALL) Y = computed;
-
 endmodule*/
+///////////////////////////
+module kp2
+(
+    input [3:0] A,
+    input [3:0] B,
+    input S1, S2,
+    input EA, EB,
+    output AY, BY
+);
+wire [1:0]sel = {S2, S1};
+wire A_out = A[sel];//((sel == 2'b00) & A[0]) | ((sel == 2'b01) & A[1] )| ((sel == 2'b10) & A[2]) | ((sel == 2'b11) & A[3]);
+wire B_out = B[sel];//((sel == 2'b00) & B[0]) | ((sel == 2'b01) & B[1]) | ((sel == 2'b10) & B[2]) | ((sel == 2'b11) & B[3]);
+
+assign AY = (EA)?(1'b0):(A_out);
+assign BY = (EB)?(1'b0):(B_out);
+endmodule
+
+
