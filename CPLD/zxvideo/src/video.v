@@ -43,7 +43,7 @@ end
 
 assign R = DD46_by;
 assign G = DD47_ay;
-assign B = ;
+assign B = DD46_ay;
 assign I = DD47_by;
 
 assign test = flash_cnt[23];
@@ -65,8 +65,7 @@ assign K11 = DD43[2];
 /////////////////////////////////////
 wire DD46_ay, DD46_by;
 wire DD47_ay, DD47_by;
-kp2 DD46(.A({K9, K9, DD40_Q[3] ,DD40_Q[0]}), .B({K10, K10, DD40_Q[4], DD40_Q[1]}), .S1(pix), .S2(C5), .EA(BL), .
-(BL), .AY(DD46_ay), .BY(DD46_by));
+kp2 DD46(.A({K9, K9, DD40_Q[3] ,DD40_Q[0]}), .B({K10, K10, DD40_Q[4], DD40_Q[1]}), .S1(pix), .S2(C5), .EA(BL), .EB(BL), .AY(DD46_ay), .BY(DD46_by));
 kp2 DD47(.A({K11, K11, DD40_Q[5] ,DD40_Q[2]}), .B({1'b0, 1'b0, DD40_Q[6], DD40_Q[6]}), .S1(pix), .S2(C5), .EA(BL), .EB(BL), .AY(DD47_ay), .BY(DD47_by));
 
 /////////////////////////////////////
