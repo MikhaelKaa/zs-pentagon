@@ -15,10 +15,10 @@ module video   (Q, C17, C3, C18, C1, C2,	K9, K10, K11, BL, C5, C7,	FLASHER,	R, G
 	ic_1533ir23 dd38 (.D(Q), .Q(dd38_q), .C(C18), .OEn(1'b0));
 	
 	wire [3:0]dd41_q;
-	ic_1533ir16 dd41(.D(dd38_q[3:0]), .DI(1'b0), .C(C1), .Q(dd41_q), .PE(C2), .OE(1'b1));
+	ir16 dd41(.D(dd38_q[3:0]), .DI(1'b0), .C(C1), .Q(dd41_q), .PE(C2), .OE(1'b1));
 	
 	wire [3:0]dd42_q;
-	ic_1533ir16 dd42(.D(dd38_q[7:4]), .DI(dd41_q[3]), .C(C1), .Q(dd42_q), .PE(C2), .OE(1'b1));
+	ir16 dd42(.D(dd38_q[7:4]), .DI(dd41_q[3]), .C(C1), .Q(dd42_q), .PE(C2), .OE(1'b1));
 	
 	wire dd7_11 = ~(dd40_q[7] & FLASHER);
 	wire dd6_11 = dd7_11 ^ dd42_q[3];

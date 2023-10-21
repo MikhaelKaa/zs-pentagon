@@ -112,3 +112,18 @@ always @(negedge C) begin
 end
 assign Q = (OE)?(q):(4'bz);
 endmodule
+
+/////// IR16
+module ir16(
+input [3:0] D,
+input DI, C, PE, OE,
+output [3:0] Q
+);
+reg [3:0] data = 4'b0;
+	always @(negedge C) begin
+		if (PE) data <= D;
+		else data <= {data[2:0], DI};
+		
+	end
+assign Q = OE?(data):(4'bz);
+endmodule

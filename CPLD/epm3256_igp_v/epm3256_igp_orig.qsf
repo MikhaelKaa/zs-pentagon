@@ -37,7 +37,7 @@
 
 
 set_global_assignment -name FAMILY MAX3000A
-set_global_assignment -name DEVICE "EPM3256AQC208-10"
+set_global_assignment -name DEVICE "EPM3512AQC208-10"
 set_global_assignment -name TOP_LEVEL_ENTITY epm3256_igp_orig
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:07:41  NOVEMBER 23, 2022"
@@ -56,7 +56,7 @@ set_location_assignment PIN_93 -to CPU_RFSH
 set_location_assignment PIN_92 -to A[4]
 set_location_assignment PIN_91 -to A[8]
 set_location_assignment PIN_90 -to CS_ROM
-set_location_assignment PIN_9 -to KBD_CLK
+set_location_assignment PIN_7 -to KBD_CLK
 set_location_assignment PIN_89 -to A[10]
 set_location_assignment PIN_87 -to A[11]
 set_location_assignment PIN_86 -to A[9]
@@ -67,7 +67,7 @@ set_location_assignment PIN_77 -to MA[3]
 set_location_assignment PIN_76 -to MA[4]
 set_location_assignment PIN_71 -to MA[5]
 set_location_assignment PIN_70 -to MA[9]
-set_location_assignment PIN_7 -to HS
+set_location_assignment PIN_8 -to HS
 set_location_assignment PIN_69 -to MA[6]
 set_location_assignment PIN_68 -to MA[8]
 set_location_assignment PIN_67 -to MA[7]
@@ -176,3 +176,6 @@ set_location_assignment PIN_80 -to CS_RAM1
 set_location_assignment PIN_45 -to MA[17]
 set_location_assignment PIN_46 -to MA[18]
 set_location_assignment PIN_17 -to EXT3
+set_location_assignment PIN_205 -to C_PNT
+set_location_assignment PIN_201 -to C_TURBO
+set_global_assignment -name CDF_FILE build/Chain1.cdf

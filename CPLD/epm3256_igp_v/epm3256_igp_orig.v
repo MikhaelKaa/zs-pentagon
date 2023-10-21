@@ -20,9 +20,14 @@ module epm3256_igp_orig (
 	inout  [7:0] D,	
 	input [15:0] A,
 	
+	// PS2 controller
+	input 	C_MAGIC,
+	input 	C_PNT,
+	input 	C_TURBO,
+
 	// 
 	output 	C_DOS,
-	input 	C_MAGIC,
+	
 	output 	C_IODOS,
 	input 	C_IORQGE,
 	output 	C_BLK,
@@ -121,7 +126,7 @@ module epm3256_igp_orig (
 	assign HS = 1'b1;
 	
 	// CPU data bus
-	//assign D = 8'bz;	
+	assign D = 8'bz;	
 	
 	// RAM
 	wire [15:0] R_dis = {1'b1, 1'b0, B18, B17, B16, B15, B14, B11, C35, B10, B9, B5, B4, B3, B2, B1};
