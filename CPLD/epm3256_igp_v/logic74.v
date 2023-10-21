@@ -60,9 +60,9 @@ module ic_1533tm8
     input R
 );
 reg [3:0] q = 4'b0;
-always @(posedge C or negedge R) begin
-    if(~R) q <= 4'b0;
-    else q <= D;
+always @(posedge C /*or negedge R*/) begin
+    //if(~R) q <= 4'b0;
+    /*else*/ q <= D;
 end
 assign Q_p = q;
 assign Q_n = ~Q_p;
@@ -91,7 +91,8 @@ module ic_1533ir23
     input OEn
 );
 reg [7:0] q = 8'b0;
-always @(posedge C) q <= D;
+//always @(posedge C) q <= D;
+always @(posedge C) q = D;
 assign Q = (OEn)?(8'bz):(q);
 endmodule
 

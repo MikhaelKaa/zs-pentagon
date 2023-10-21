@@ -15,6 +15,8 @@ module pent_log (C29, B13, B18, RD, RAS, MREQ, A15, A14, CAS_n, RFS, RD_n, C19, 
 	always @(posedge CAS_n) begin
 		dd15[0] <= dd50_13 & RFS & ~dd15[0];
 		dd15[1] <= dd15[1] ^ ~dd15[0];
+		//dd15[0] = dd50_13 & RFS & ~dd15[0];
+		//dd15[1] = dd15[1] ^ ~dd15[0];
 	end
 	
 	assign C19 = ~(dd50_13 & dd1_10);

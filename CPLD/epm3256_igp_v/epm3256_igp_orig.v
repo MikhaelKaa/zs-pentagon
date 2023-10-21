@@ -97,7 +97,7 @@ module epm3256_igp_orig (
 	.K9(K9), .K10(K10), .K11(K11), .TAPEOUT(TAPEOUT), .SOUND(SOUND));
 
 	wire R, G, B, I, SYNC;
-	video video0(.Q(D), .C17(C17), .C3(C3), .C18(C18), .C1(C1), .C2(C2), .K9(K9), .K10(K10), .K11(K11), .BL(BL), .C5(C5), .C7(C7), .FLASHER(flash_gen),
+	video video0(.Q(MD), .C17(C17), .C3(C3), .C18(C18), .C1(C1), .C2(C2), .K9(K9), .K10(K10), .K11(K11), .BL(BL), .C5(C5), .C7(C7), .FLASHER(flash_gen),
 	.R(R), .G(G), .B(B), .I(I), .SYNC(SYNC), .test_pin(test_pin));
 	
 	// flash generator
@@ -129,14 +129,20 @@ module epm3256_igp_orig (
 	assign D = 8'bz;	
 	
 	// RAM
-	wire [15:0] R_dis = {1'b1, 1'b0, B18, B17, B16, B15, B14, B11, C35, B10, B9, B5, B4, B3, B2, B1};
+	wire [15:0]RA = ~RAS?(MA[7:0]):(MA[16:8]);
+	ic_1533kp11 dd16(.SA(RAS), .CS(CPU), .A({B16, B15, B14, B11}), .B({B4, B3, B2, B1}), .Y(RA[3:0]));
+	ic_1533kp11 dd17(.SA(RAS), .CS(CPU), .A({1'b1, 1'b0, B18, B17}), .B({C35, B10, B9, B5}), .Y(RA[7:4]));
+	ic_1533kp11 dd18(.SA(RAS), .CS(DIS), .A({A[10], A[9], A[8], A[7]}), .B({A[3], A[2], A[1], A[0]}), .Y(RA[3:0]));
+	ic_1533kp11 dd19(.SA(RAS), .CS(DIS), .A({C33, A[13], A[12], A[11]}), .B({C34, A[6], A[5], A[4]}), .Y(RA[7:4]));
+	
+	//wire [15:0] R_dis = {1'b1, 1'b0, B18, B17, B16, B15, B14, B11, C35, B10, B9, B5, B4, B3, B2, B1};
 	//wire [15:0] R_cpu = {{C33, A[13:7]}, {C34, A[6:0]}};
-	wire [15:0] R_cpu = {{C34, C33, A[13:0]}};
+	//wire [15:0] R_cpu = {{C34, C33, A[13:0]}};
 	// RAM data register
 	ic_1533ir23 dd39(.D(MD), .Q(D), .C(C20), .OEn(C19));
 	// RAM address
-	assign MA = {2'b0, {(CPU)?(R_dis):(R_cpu)}};
-	assign MD = (C19)?(D):(8'bz);
+	//assign MA = {2'b0, {(CPU)?(R_dis):(R_cpu)}};
+	//assign MD = (C19)?(D):(8'bz);
 	assign WR_RAM = C16;
 	assign CS_RAM0 = 1'b0;
 	assign CS_RAM1 = ~CS_RAM0;
@@ -152,11 +158,11 @@ module epm3256_igp_orig (
 	assign VGA = {1'b0, I, G, 1'b0, I, R, I, B};
 	assign SGI = 1'b0;
 	
-	assign ROM_A14 = 1'bz;
-	assign ROM_A15 = 1'bz;
-	assign WR_ROM = 1'bz;
+	assign ROM_A14 = 1'b1;
+	assign ROM_A15 = 1'b1;
+	assign WR_ROM = 1'b1;
 	assign RD_ROM = 1'b1;
-	assign CS_ROM = 1'bz;
+	assign CS_ROM = 1'b1;
 	
 	// PSG
 	assign AYCLK = 1'bz;

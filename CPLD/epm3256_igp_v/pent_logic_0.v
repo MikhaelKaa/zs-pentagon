@@ -19,5 +19,6 @@ module pent_logic_0 (D, C39, A14, A15, IORQn, WRn, A1, CAS, DIS, C33, C34, C35, 
 	assign C37 = ~(CAS & dd64_1);
 	wire dd64_1 = ~dd65_11;
 	assign C38 = ~(CAS & dd65_11);
-
+	assign C35 = dd62_out[3];
+	assign C36 = dd62_out[4];
 endmodule
