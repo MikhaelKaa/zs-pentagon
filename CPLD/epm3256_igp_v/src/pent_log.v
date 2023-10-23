@@ -7,7 +7,7 @@ module pent_log (C29, B13, B18, RD, RAS, MREQ, A15, A14, CAS_n, RFS, RD_n, C19, 
 	//TODO R23, R24
 
 	wire dd50_1 = ~(A14 | A15);
-    wire dd50_13 = ~(MREQ | dd50_1);
+   wire dd50_13 = ~(MREQ | dd50_1);
 	wire dd9_3 = RAS & ~dd15[0];
 	wire dd1_10 = ~RD_n;
 	
@@ -16,7 +16,7 @@ module pent_log (C29, B13, B18, RD, RAS, MREQ, A15, A14, CAS_n, RFS, RD_n, C19, 
 		dd15[0] <= dd50_13 & RFS & ~dd15[0];
 		dd15[1] <= dd15[1] ^ ~dd15[0];
 		//dd15[0] = dd50_13 & RFS & ~dd15[0];
-		//dd15[1] = dd15[1] ^ ~dd15[0];
+		//dd15[1] = dd15[1] ^ ~dd15[0]; //// <------------------------------ TODO: WTF
 	end
 	
 	assign C19 = ~(dd50_13 & dd1_10);

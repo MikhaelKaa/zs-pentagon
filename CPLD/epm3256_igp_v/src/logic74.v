@@ -3,7 +3,7 @@ module ic_1533ie7 (d1,d2,d3,d4, q1,q2,q3,q4, R, C, CR, BR, plus1, minus1);
 	input  plus1, minus1, R, C;
 	input  d1, d2, d3, d4;
 	output q1, q2, q3, q4, CR, BR;
-
+	
 	reg[3:0] tempQ = 4'b0000;
 	assign CR = (tempQ == 4'b1111 && plus1 == 1'b0 && minus1 == 1'b1)? 1'b0:1'b1;
 	assign BR = (tempQ == 4'b0000 && minus1 == 1'b0 && plus1 == 1'b1)? 1'b0:1'b1;
@@ -65,7 +65,7 @@ always @(posedge C /*or negedge R*/) begin
     /*else*/ q <= D;
 end
 assign Q_p = q;
-assign Q_n = ~Q_p;
+assign Q_n = ~q;
 endmodule
 
 module ic_1533tm9

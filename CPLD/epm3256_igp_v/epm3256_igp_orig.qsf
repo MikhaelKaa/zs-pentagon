@@ -164,13 +164,6 @@ set_location_assignment PIN_112 -to VD[4]
 set_location_assignment PIN_110 -to VD[5]
 set_location_assignment PIN_136 -to VA[10]
 set_location_assignment PIN_13 -to EXT2
-set_global_assignment -name VERILOG_FILE video.v
-set_global_assignment -name VERILOG_FILE pent_logic_1.v
-set_global_assignment -name VERILOG_FILE pent_log.v
-set_global_assignment -name VERILOG_FILE pent_logic_0.v
-set_global_assignment -name VERILOG_FILE logic74.v
-set_global_assignment -name VERILOG_FILE epm3256_igp_orig.v
-set_global_assignment -name VERILOG_FILE pent_gen.v
 set_location_assignment PIN_38 -to CS_RAM0
 set_location_assignment PIN_80 -to CS_RAM1
 set_location_assignment PIN_45 -to MA[17]
@@ -178,4 +171,11 @@ set_location_assignment PIN_46 -to MA[18]
 set_location_assignment PIN_17 -to EXT3
 set_location_assignment PIN_205 -to C_PNT
 set_location_assignment PIN_201 -to C_TURBO
-set_global_assignment -name CDF_FILE build/Chain1.cdf
+set_global_assignment -name VERILOG_FILE src/epm3256_igp_orig.v
+set_global_assignment -name VERILOG_FILE src/logic74.v
+set_global_assignment -name VERILOG_FILE src/video.v
+set_global_assignment -name VERILOG_FILE src/test_pent_gen.v
+set_global_assignment -name VERILOG_FILE src/pent_logic_1.v
+set_global_assignment -name VERILOG_FILE src/pent_logic_0.v
+set_global_assignment -name VERILOG_FILE src/pent_log.v
+set_global_assignment -name VERILOG_FILE src/pent_gen.v
