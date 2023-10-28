@@ -33,6 +33,7 @@ module ic_1533kp11
     output [3:0] Y
 );
 assign Y = (CS)?(4'bz):((SA)?(B):(A));
+//assign Y = (CS)?(4'bz):((SA)?(A):(B));
 endmodule
 
 module ic_1533kp2

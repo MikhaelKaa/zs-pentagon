@@ -110,18 +110,16 @@ module pent_gen (clk14m, C1, C25, C2, C31, C3, B1, B2, B3, B4, B5, B6, SSI, B7, 
 	assign C8 = ~KSI; // TODO: without RC
 
 	// DD45
-	wire [3:0] dd45_d = {1'bz, 1'bz, RAS, C25};
+
 	wire [3:0] dd45_qp;
 	wire [3:0] dd45_qn;
-	ic_1533tm8 dd45 (.C(C31), .R(1'b1), .D(dd45_d), .Q_p(dd45_qp), .Q_n(dd45_qn));
+	ic_1533tm8 dd45 (.C(C31), .R(1'b1), .D({1'bz, 1'bz, RAS, C25}), .Q_p(dd45_qp), .Q_n(dd45_qn));
 	assign RAS = dd45_qp[0];
 	assign CAS = dd45_qp[1];
 	assign RAS_n = dd45_qn[0];
 	assign CAS_n = dd45_qn[1];
-	//assign dd45_qp[1:0] = {RAS, CAS};
-	//assign dd45_qn[1:0] = {RAS_n, CAS_n};
-	
+
 	// DD14
-	ic_1533kp11 dd14(.A({1'b1, 1'b0, C30, B12}), .B({B12, B8, B7, B6}), .SA(B13), .CS(1'b0),  .Y({B17, B16, B15, B14}));
+	ic_1533kp11 dd14(.A({1'b1, 1'b0, B13, B12}), .B({B12, B8, B7, B6}), .SA(C30), .CS(1'b0),  .Y({B17, B16, B15, B14}));
 	
 endmodule

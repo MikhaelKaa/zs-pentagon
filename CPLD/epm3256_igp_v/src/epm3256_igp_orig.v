@@ -78,7 +78,7 @@ module epm3256_igp_orig (
 );
 	
 	wire C1, C25, C2, C31, C3, B1, B2, B3, B4, B5, B6, SSI, B7, B8, B9, B10, B11, B12, B13, C6, KSI, C7, BL, C5, C8, RAS, RAS_n, CAS, CAS_n, B14, B15, B16, B17;
-	pent_gen gen (.clk14m(CLK_14MHZ), .C30(1'b0),
+	pent_gen gen (.clk14m(CLK_14MHZ), .C30(C30),
 	.C1(C1), .C25(C25), .C2(C2), .C31(C31), .C3(C3), .B1(B1), .B2(B2), .B3(B3), .B4(B4), .B5(B5), .B6(B6), .SSI(SSI), .B7(B7), .B8(B8), .B9(B9), .B10(B10), .B11(B11),
 	.B12(B12), .B13(B13), .C6(C6), .KSI(KSI), .C7(C7), .BL(BL), .C5(C5), .C8(C8), .RAS(RAS), .RAS_n(RAS_n), .CAS(CAS), .CAS_n(CAS_n), .B14(B14), .B15(B15), .B16(B16), .B17(B17));
 	
@@ -116,7 +116,7 @@ module epm3256_igp_orig (
 	// CPU clock
 	assign CPU_CLK = C25;
 	assign CPU_NMI = 1'b1;
-	assign CPU_INT = C8;
+	assign CPU_INT = 1'b1;//C8;
 	assign CPU_BUSRQ = 1'b1;
 	assign CPU_WAIT = 1'b1;
 	
@@ -140,7 +140,7 @@ module epm3256_igp_orig (
 	end
 	// DD3 static ram extension
 	reg [7:0] ram_adr_reg = 8'b0;
-	always @(negedge ras_delay/*RAS*/) begin
+	always @(negedge RAS/*ras_delay*/) begin
 		ram_adr_reg = RRAM;
 	end
 	ic_1533kp11 dd16(.SA(RAS_n), .CS(CPU), .A({B16, B15, B14, B11}), .B({B4, B3, B2, B1}), .Y(RRAM[3:0]));
@@ -155,6 +155,7 @@ module epm3256_igp_orig (
 	ic_1533ir23 dd39(.D(MD), .Q(D), .C(C20), .OEn(C19));
 	// RAM address
 	assign MA = {1'b0, C37, ram_adr_reg, RRAM};
+	//assign MA = {1'b0, 1'b0/*C37*/, RRAM, ram_adr_reg};
 	//assign MA = {2'b0, {(CPU)?(R_dis):(R_cpu)}};
 	assign MD = (C16)?(8'bz):(D);
 	assign WR_RAM = C16;
