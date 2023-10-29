@@ -52,6 +52,10 @@ module epm3256_igp_orig (
 	// ROM
 	output ROM_A14,
 	output ROM_A15,
+	output ROM_A16,
+	output ROM_A17,
+	output ROM_A18,
+	
 	output WR_ROM,
 	output RD_ROM,
 	output CS_ROM,
@@ -148,16 +152,19 @@ module epm3256_igp_orig (
 	ic_1533kp11 dd18(.SA(RAS_n), .CS(DIS), .A({A[10], A[9], A[8], A[7]}), .B({A[3], A[2], A[1], A[0]}), .Y(RRAM[3:0]));
 	ic_1533kp11 dd19(.SA(RAS_n), .CS(DIS), .A({C33, A[13], A[12], A[11]}), .B({C34, A[6], A[5], A[4]}), .Y(RRAM[7:4]));
 	
-	//wire [15:0] R_dis = {1'b1, 1'b0, B18, B17, B16, B15, B14, B11, C35, B10, B9, B5, B4, B3, B2, B1};
+	wire [15:0] R_dis = {1'b1, 1'b0, B18, B17, B16, B15, B14, B11, C35, B10, B9, B5, B4, B3, B2, B1};
 	//wire [15:0] R_cpu = {{C33, A[13:7]}, {C34, A[6:0]}};
-	//wire [15:0] R_cpu = {{C34, C33, A[13:0]}};
+	wire R_cpu = A[15:0];
 	// RAM data register
 	ic_1533ir23 dd39(.D(MD), .Q(D), .C(C20), .OEn(C19));
+	
 	// RAM address
-	assign MA = {1'b0, C37, ram_adr_reg, RRAM};
-	//assign MA = {1'b0, 1'b0/*C37*/, RRAM, ram_adr_reg};
-	//assign MA = {2'b0, {(CPU)?(R_dis):(R_cpu)}};
+	assign MA = {3'b0, {(CPU)?(16'bz):(R_cpu)} };
+	assign MA = {3'b0, {(DIS)?(16'bz):(R_dis)} };
+	
+	//assign MD = (C16)?(D):(8'bz);
 	assign MD = (C16)?(8'bz):(D);
+	
 	assign WR_RAM = C16;
 	assign CS_RAM0 = C37 | C38;//1'b0;
 	assign CS_RAM1 = 1'b1;//~CS_RAM0;
@@ -173,11 +180,16 @@ module epm3256_igp_orig (
 	assign VGA = {1'b0, I, G, 1'b0, I, R, I, B};
 	assign SGI = 1'b0;
 	
-	assign ROM_A14 = 1'b1;
-	assign ROM_A15 = 1'b1;
+	// ROM
+	assign ROM_A14 = 1'b0;
+	assign ROM_A15 = 1'b0;
+	assign ROM_A16 = 1'b0;
+	assign ROM_A17 = 1'b0;
+	assign ROM_A18 = 1'b0;
+	
 	assign WR_ROM = 1'b1;
-	assign RD_ROM = 1'b1;
-	assign CS_ROM = 1'b1;
+	assign RD_ROM = 1'b1;//CPU_MREQ | C13;  //OE
+	assign CS_ROM = 1'b1;//CPU_RD;
 	
 	// PSG
 	assign AYCLK = 1'bz;
@@ -188,7 +200,7 @@ module epm3256_igp_orig (
 	assign BEEP = SOUND;
 	assign TAPE_OUT = TAPEOUT;
 	
-	assign RD_1F = 1'bz;
+	assign RD_1F = 1'b1;
 	
 	
 endmodule

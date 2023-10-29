@@ -52,6 +52,7 @@ assign AY = (EA)?(1'b0):(A_out);
 assign BY = (EB)?(1'b0):(B_out);
 endmodule
 
+
 module ic_1533tm8
 (
     input [3:0] D,
@@ -97,7 +98,7 @@ always @(posedge C) q = D;
 assign Q = (OEn)?(8'bz):(q);
 endmodule
 
-module ic_1533ir16
+/*module ic_1533ir16
 (
     input [3:0] D,
     output [3:0] Q,
@@ -113,7 +114,7 @@ always @(negedge C) begin
 	else q <= {q[3:1], DI};
 end
 assign Q = (OE)?(q):(4'bz);
-endmodule
+endmodule*/
 
 /////// IR16
 module ir16(

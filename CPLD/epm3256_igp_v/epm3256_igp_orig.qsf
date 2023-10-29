@@ -179,3 +179,6 @@ set_global_assignment -name VERILOG_FILE src/pent_logic_1.v
 set_global_assignment -name VERILOG_FILE src/pent_logic_0.v
 set_global_assignment -name VERILOG_FILE src/pent_log.v
 set_global_assignment -name VERILOG_FILE src/pent_gen.v
+set_location_assignment PIN_56 -to ROM_A16
+set_location_assignment PIN_34 -to ROM_A17
+set_location_assignment PIN_57 -to ROM_A18
