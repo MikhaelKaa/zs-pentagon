@@ -47,7 +47,7 @@ set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name MAX7000_DEVICE_IO_STANDARD "3.3-V LVTTL"
-set_location_assignment PIN_99 -to C_IODOS
+set_location_assignment PIN_100 -to C_IODOS
 set_location_assignment PIN_98 -to A[6]
 set_location_assignment PIN_97 -to A[7]
 set_location_assignment PIN_96 -to CPU_M1
@@ -109,15 +109,12 @@ set_location_assignment PIN_182 -to CPU_RESET
 set_location_assignment PIN_181 -to CPU_MREQ
 set_location_assignment PIN_18 -to KBD_CS
 set_location_assignment PIN_178 -to TAPE_IN
-set_location_assignment PIN_177 -to AYCLK
 set_location_assignment PIN_175 -to D[2]
 set_location_assignment PIN_173 -to D[0]
 set_location_assignment PIN_172 -to C_BLK
 set_location_assignment PIN_171 -to A[12]
 set_location_assignment PIN_170 -to TAPE_OUT
-set_location_assignment PIN_169 -to BDIR
 set_location_assignment PIN_168 -to BEEP
-set_location_assignment PIN_167 -to BC1
 set_location_assignment PIN_166 -to A[15]
 set_location_assignment PIN_164 -to A[14]
 set_location_assignment PIN_163 -to A[13]
@@ -154,7 +151,7 @@ set_location_assignment PIN_111 -to CPU_IORQ
 set_location_assignment PIN_109 -to CPU_BUSRQ
 set_location_assignment PIN_102 -to CPU_RD
 set_location_assignment PIN_101 -to CPU_WAIT
-set_location_assignment PIN_100 -to CPU_NMI
+set_location_assignment PIN_99 -to CPU_NMI
 set_location_assignment PIN_10 -to VS
 set_location_assignment PIN_120 -to VD[0]
 set_location_assignment PIN_118 -to VD[1]
@@ -182,3 +179,10 @@ set_global_assignment -name VERILOG_FILE src/pent_gen.v
 set_location_assignment PIN_56 -to ROM_A16
 set_location_assignment PIN_34 -to ROM_A17
 set_location_assignment PIN_57 -to ROM_A18
+set_location_assignment PIN_169 -to BBSRAM_WR
+set_location_assignment PIN_167 -to BBSRAM_RD
+set_location_assignment PIN_177 -to BBSRAM_MREQ
+set_location_assignment PIN_121 -to EXT1
+set_location_assignment PIN_146 -to STM32_BUSRQ
+set_location_assignment PIN_119 -to VD[6]
+set_location_assignment PIN_123 -to VD[7]

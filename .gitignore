@@ -64,3 +64,4 @@ output_files
 db
 incremental_db
 /CPLD/epm3256_igp_v/epm3256_igp_orig.qws
+/FW/*.bin

@@ -3,39 +3,29 @@ module epm3256_igp_orig (
 	input 	CLK_14MHZ,
 
 	// CPU signals
-	output 	CPU_CLK,
-	output 	CPU_INT,
 	input 	CPU_IORQ,
 	input 	CPU_MREQ,
 	input 	CPU_WR,
 	input 	CPU_RD,
 	input 	CPU_M1,
+	input 	CPU_RFSH,
+	input 	CPU_RESET,
+
+	output 	CPU_CLK,
+	output 	CPU_INT,
 	output 	CPU_BUSRQ,
 	output 	CPU_WAIT,
-	input 	CPU_RFSH,
 	output 	CPU_NMI,
-	input 	CPU_RESET,
 	
 	// CPU address & data
 	inout  [7:0] D,	
 	input [15:0] A,
 	
-	// PS2 controller
-	input 	C_MAGIC,
-	input 	C_PNT,
-	input 	C_TURBO,
+	// BBSRAM
+	output BBSRAM_RD,
+	output BBSRAM_WR,
+	output BBSRAM_MREQ,
 
-	// 
-	output 	C_DOS,
-	
-	output 	C_IODOS,
-	input 	C_IORQGE,
-	output 	C_BLK,
-	
-	output [14:0]VA,
-	inout [5:0]VD,
-	output VWR,
-	
 	// Main RAM 1024k
 	output WR_RAM,
 	output CS_RAM1,
@@ -43,43 +33,211 @@ module epm3256_igp_orig (
 	inout [7:0] MD,
 	output [18:0]MA,
 	
-	// VGA
-	output SGI,
-	output [7:0]VGA,
-	output HS,
-	output VS,
-	
 	// ROM
-	output ROM_A14,
+	output ROM_A14, // TODO: ROM_A_H[5],
 	output ROM_A15,
 	output ROM_A16,
 	output ROM_A17,
 	output ROM_A18,
-	
 	output WR_ROM,
 	output RD_ROM,
 	output CS_ROM,
 	
-	// PSG
-	output AYCLK,
-	output BDIR,
-	output BC1,
+	// Video output
+	output [7:0]VGA, //TODO -2
+	output HS,
+	output VS,
+	output SGI,
 	
+	// DOS
+	output 	C_DOS,
+	output 	C_IODOS,
+
+	// 
+	input 	C_IORQGE,
+	output 	C_BLK,
+
+	//
+	output [14:0]VA,
+	inout [7:0]VD, // [5:0] ->> [7:0] ?
+	output VWR,
+
 	// Port FE
 	output BEEP,
 	output TAPE_OUT,
 	input TAPE_IN,
 	
-	// SPI 
-	input KBD_DI,
-	input KBD_CS,
-	input KBD_CLK,
-	
 	// Joystick select
 	output RD_1F,
-	output EXT2,
+
+	// USB/PS2/SEGAGP controller
+	input 	C_MAGIC,
+	input 	C_PNT,
+	input 	C_TURBO,
+	// SPI 
+	input 	KBD_DI,
+	input 	KBD_CS,
+	input 	KBD_CLK,
+
+	// stm32 bluepill device
+	input STM32_BUSRQ, 	// EXT0,
+	input EXT1,				// RESET. The signal passes by. Disabling requires hardware modification of the hat, do not use this pin (signal) !
+	
+	// EXT pins.
+	output EXT2,  // LED
 	output EXT3
+
+	// PSG
+	//output AYCLK,
+	//output BDIR,
+	//output BC1,
 );
+/*
+	reg [3:0] EX_RGBI_PIX = 4'b0;
+	reg [7:0] EX_RGBI_DATA = 8'b0;
+	reg [19:0] EX_RGBI_cnt = 20'b0;
+	reg [14:0] EX_RGBI_ADR = 15'b0;
+	reg pre_VWR = 1'b0;
+	
+	reg [7:0] cnt = 8'b0;
+	always @(negedge CLK_14MHZ) begin
+		cnt = cnt + 1'b1;
+		
+		if(cnt[0]) begin
+			pre_VWR <= 1'b0;
+			VD <= EX_RGBI_cnt[9:2];
+			EX_RGBI_ADR <= EX_RGBI_cnt;
+			
+		end else begin 
+			pre_VWR <= 1'b1;
+			EX_RGBI_DATA <= VD;
+			
+			if(KSI) begin
+				EX_RGBI_cnt <= 0;	
+			end else begin
+				EX_RGBI_cnt <= EX_RGBI_cnt + 1'b1;
+				EX_RGBI_ADR <= EX_RGBI_cnt[15:1];
+				EX_RGBI_PIX <= EX_RGBI_DATA[3:0];
+			end
+		
+		end	
+		
+	end 
+	
+	always @(negedge cnt[0]) begin
+
+	end 
+*/
+	
+	/******************** CPU ***********************/	
+	// CPU data bus
+	//assign D = CPU_RD?(8'bz):(MD);	
+	assign D = 8'bz;	
+	
+	// CPU clock
+	assign CPU_CLK   = C25;
+	
+	// TODO: NMI IODOS перепутаны
+	assign C_IODOS = 1'b1;
+	assign CPU_NMI   = 1'b1;
+	
+	
+	assign CPU_INT   = C8;
+	assign CPU_BUSRQ = STM32_BUSRQ; //1'b1;
+	assign CPU_WAIT  = 1'b1;
+
+	
+	/***************** BBSRAM 32kb ******************/	
+	assign BBSRAM_RD    = CPU_RD | A[15];
+	assign BBSRAM_WR    = STM32_BUSRQ?(CPU_WR | (A < 16'h4000) | A[15]):(CPU_WR | A[15]);
+	assign BBSRAM_MREQ  = CPU_MREQ | A[15]; 
+	// BBRAM data connect to cpu data
+	// BBRAM adr connect to cpu adr [14:0]
+	
+	
+	/********** ext RAM W24257AK-20 32kb ************/
+	assign VA = A[14:0];
+	assign VD = 8'bz;//(CPU_WR | CPU_MREQ )?(8'bz):(D);
+	//assign D  = (CPU_RD | CPU_MREQ )?(8'bz):(VD);
+	assign VWR = CPU_WR | CPU_MREQ ;
+	
+	//assign VA = EX_RGBI_ADR;
+	////assign VD = 8'bz;
+	//assign VWR = pre_VWR;
+	
+	
+	/***************** RAM 1024k ********************/	
+	// RAM address  
+	assign MA = {A, 3'b1};// 19'bx;
+	//assign MD = (CPU_WR | CPU_MREQ)?(8'bz):(D);
+	//assign D  = (CPU_RD | CPU_MREQ)?(8'bz):(MD);
+	assign WR_RAM  = 1'b1;//CPU_WR | CPU_MREQ;
+	assign CS_RAM0 = 1'b1;//CPU_MREQ;
+	assign CS_RAM1 = 1'b1;//CPU_MREQ;//~CS_RAM0;
+	
+	
+	/******************* ROM 512k *******************/
+	assign ROM_A14 = 1'b0;
+	assign ROM_A15 = 1'b0;
+	assign ROM_A16 = 1'b0;
+	assign ROM_A17 = 1'b0;
+	assign ROM_A18 = 1'b0;
+	
+	assign WR_ROM = 1'b1;
+	assign RD_ROM = 1'b1;//CPU_MREQ | C13;  //OE
+	assign CS_ROM = 1'b1;//CPU_RD;
+	
+
+	/**************** Video output ******************/	
+	assign VGA = {1'b0, I, G, 1'b0, I, R, I, B};
+	//                  I               G                     I               R               I               B
+	//assign VGA = {1'b0, EX_RGBI_PIX[0], EX_RGBI_PIX[2], 1'b0, EX_RGBI_PIX[0], EX_RGBI_PIX[3], EX_RGBI_PIX[0], EX_RGBI_PIX[1]};
+	// Vertical sync
+	assign VS = SYNC;
+	// TODO: in Jasper this pin use to enable scart
+	assign HS = 1'b1;
+	// Not used.
+	assign SGI = 1'b0;
+
+	
+	// port 
+	assign BEEP = SOUND;
+	assign TAPE_OUT = TAPEOUT;
+
+	//
+	assign RD_1F = 1'b1;
+	
+	assign C_DOS = 1'b0;
+	
+	
+	//
+	wire test_pin;
+	
+	assign EXT2 = reg_fe[0];//CAS_n;
+	assign EXT3 = C1;
+	
+	
+	// io
+	wire iowr = CPU_IORQ | CPU_WR ;//| ~m1;
+	wire iord = CPU_IORQ | CPU_RD ;//| ~m1;
+	
+	// register fe (gpio)
+	reg [7:0] reg_fe = 8'b0;
+	// register ff (PWM)
+	reg [7:0] reg_ff = 8'b0;
+	
+	always @(negedge iowr) begin
+		if(A[7:0] == 8'hfe) reg_fe = D;
+	end
+	
+
+	// PSG <---- Deleted. This pins now BBSRAM RWIO.
+	//assign AYCLK = 1'bz;
+	//assign BDIR = 1'bz;
+	//assign BC1 = 1'bz;
+
+	// CPU reset
+	wire C39 = CPU_RESET;
 	
 	wire C1, C25, C2, C31, C3, B1, B2, B3, B4, B5, B6, SSI, B7, B8, B9, B10, B11, B12, B13, C6, KSI, C7, BL, C5, C8, RAS, RAS_n, CAS, CAS_n, B14, B15, B16, B17;
 	pent_gen gen (.clk14m(CLK_14MHZ), .C30(C30),
@@ -104,108 +262,7 @@ module epm3256_igp_orig (
 	video video0(.Q(MD), .C17(C17), .C3(C3), .C18(C18), .C1(C1), .C2(C2), .K9(K9), .K10(K10), .K11(K11), .BL(BL), .C5(C5), .C7(C7), .FLASHER(flash_gen),
 	.R(R), .G(G), .B(B), .I(I), .SYNC(SYNC), .test_pin(test_pin));
 	
-	// flash generator
-	wire flash_gen = flash_div[7];
-	reg [7:0] flash_div = 8'b0; 
-	always@(negedge KSI) begin
-		flash_div = flash_div +1'b1;
-	end
-	
-	
-	wire test_pin;
-	assign EXT2 = C2;//CAS_n;
-	assign EXT3 = C1;
-	// CPU reset
-	wire C39 = CPU_RESET;
-	// CPU clock
-	assign CPU_CLK = C25;
-	assign CPU_NMI = 1'b1;
-	assign CPU_INT = 1'b1;//C8;
-	assign CPU_BUSRQ = 1'b1;
-	assign CPU_WAIT = 1'b1;
-	
-	// Vertical sync
-	assign VS = SYNC;
-	// TODO: in Jasper this pin use to enable scart
-	assign HS = 1'b1;
-	
-	// CPU data bus
-	assign D = 8'bz;	
-	
-	// RAM
-	wire [7:0]RRAM;// = ~RAS?(MA[7:0]):(MA[16:8]);
-	reg ras_delay = 1'b0;
-	reg ras_n_delay = 1'b0;
-	
-	always @(posedge C31) begin
-		ras_delay = RAS;
-		ras_n_delay = RAS_n;
-		
-	end
-	// DD3 static ram extension
-	reg [7:0] ram_adr_reg = 8'b0;
-	always @(negedge RAS/*ras_delay*/) begin
-		ram_adr_reg = RRAM;
-	end
-	ic_1533kp11 dd16(.SA(RAS_n), .CS(CPU), .A({B16, B15, B14, B11}), .B({B4, B3, B2, B1}), .Y(RRAM[3:0]));
-	ic_1533kp11 dd17(.SA(RAS_n), .CS(CPU), .A({1'b1, 1'b0, B18, B17}), .B({C35, B10, B9, B5}), .Y(RRAM[7:4]));
-	ic_1533kp11 dd18(.SA(RAS_n), .CS(DIS), .A({A[10], A[9], A[8], A[7]}), .B({A[3], A[2], A[1], A[0]}), .Y(RRAM[3:0]));
-	ic_1533kp11 dd19(.SA(RAS_n), .CS(DIS), .A({C33, A[13], A[12], A[11]}), .B({C34, A[6], A[5], A[4]}), .Y(RRAM[7:4]));
-	
-	wire [15:0] R_dis = {1'b1, 1'b0, B18, B17, B16, B15, B14, B11, C35, B10, B9, B5, B4, B3, B2, B1};
-	//wire [15:0] R_cpu = {{C33, A[13:7]}, {C34, A[6:0]}};
-	wire R_cpu = A[15:0];
-	// RAM data register
-	ic_1533ir23 dd39(.D(MD), .Q(D), .C(C20), .OEn(C19));
-	
-	// RAM address
-	assign MA = {3'b0, {(CPU)?(16'bz):(R_cpu)} };
-	assign MA = {3'b0, {(DIS)?(16'bz):(R_dis)} };
-	
-	//assign MD = (C16)?(D):(8'bz);
-	assign MD = (C16)?(8'bz):(D);
-	
-	assign WR_RAM = C16;
-	assign CS_RAM0 = C37 | C38;//1'b0;
-	assign CS_RAM1 = 1'b1;//~CS_RAM0;
-	
-	
-	// ext RAM W24257AK-20
-	assign VA = 15'bz;
-	assign VD = 6'bz;
-	assign VWR = 1'bz;
-
-	
-	// Video output
-	assign VGA = {1'b0, I, G, 1'b0, I, R, I, B};
-	assign SGI = 1'b0;
-	
-	// ROM
-	assign ROM_A14 = 1'b0;
-	assign ROM_A15 = 1'b0;
-	assign ROM_A16 = 1'b0;
-	assign ROM_A17 = 1'b0;
-	assign ROM_A18 = 1'b0;
-	
-	assign WR_ROM = 1'b1;
-	assign RD_ROM = 1'b1;//CPU_MREQ | C13;  //OE
-	assign CS_ROM = 1'b1;//CPU_RD;
-	
-	// PSG
-	assign AYCLK = 1'bz;
-	assign BDIR = 1'bz;
-	assign BC1 = 1'bz;
-	
-	// port 
-	assign BEEP = SOUND;
-	assign TAPE_OUT = TAPEOUT;
-	
-	assign RD_1F = 1'b1;
-	
-	
 endmodule
-
-
 
 //set_location_assignment PIN_3 -to B
 /*
@@ -273,15 +330,15 @@ set_location_assignment PIN_182 -to C_RESET
 set_location_assignment PIN_181 -to C_MREQ
 set_location_assignment PIN_18 -to KBD_CS
 set_location_assignment PIN_178 -to TAPE_IN
-set_location_assignment PIN_177 -to AYCLK
+set_location_assignment PIN_177 -to BBSRAM_MREQ //AYCLK <---
 set_location_assignment PIN_175 -to CD2
 set_location_assignment PIN_173 -to CD0
 set_location_assignment PIN_172 -to C_BLK
 set_location_assignment PIN_171 -to CA12
 set_location_assignment PIN_170 -to TAPE_OUT
-set_location_assignment PIN_169 -to BDIR
+set_location_assignment PIN_169 -to BBSRAM_WR //BDIR <---
 set_location_assignment PIN_168 -to BEEP
-set_location_assignment PIN_167 -to BC1
+set_location_assignment PIN_167 -to BBSRAM_RD //BC1 <---
 set_location_assignment PIN_166 -to CA15
 set_location_assignment PIN_164 -to CA14
 set_location_assignment PIN_163 -to CA13
