@@ -13,29 +13,6 @@ begin:
     push hl
     push de
     ; start int programm
-    ld bc, 1000
-    call delay
-
-    ld a, 0b00000111
-    out (0xfe), a
-    ld bc, 300
-    call delay
-
-    ld a, 0b00000001
-    out (0xfe), a 
-    ld bc, 300
-    call delay
-
-    ld a, 0b00000010
-    out (0xfe), a 
-    ld bc, 300
-    call delay
-
-    ld a, 0b00000000
-    out (0xfe), a 
-    ld bc, 300
-    call delay  
-
 
     ; end int programm
     pop de
@@ -49,36 +26,175 @@ begin:
 start
     
     ; Устанавливаем дно стека.
+    ;ld sp, 0x6000
     ld sp, 0x7ff7
-    ;ld sp, 0xfff7
+    ;ld sp, 0xa000
     ;ld sp, 0x3ff7
     ; Разрешаем прерывания.
-    ei    ; <-- off, for debug
+    ;ei    ; <-- off, for debug
 
-    call led_start
-    call led_start
-    call led_start
+    
+    call white_border
+    ld bc, 64000
+    call delay
+    ld bc, 64000
+    call delay
+    ld bc, 64000
+    call delay
+    call black_border
+    ld bc, 64000
+    call delay
+
+    ;jp loop
+
+data_bus_test
+    ld a, 0b10101010
+    out (0xfe), a
+    in a, (0xfe)
+    cp a, 0b10101010
+    jr nz, dlopp_fail
+
+    ld a, 0b01010101
+    out (0xfe), a
+    in a, (0xfe)
+    cp a, 0b01010101
+    jr nz, dlopp_fail
+
+    ld a, 0b00000000
+    out (0xfe), a
+    in a, (0xfe)
+    cp a, 0b00000000
+    jr nz, dlopp_fail
+
+    ld a, 0b11111111
+    out (0xfe), a
+    in a, (0xfe)
+    cp a, 0b11111111
+    jr nz, dlopp_fail
+
+    jp dlopp_ok
+
+dlopp_fail
+    call red_border
+    call black_border
+    jr dlopp_fail
+
+dlopp_ok
+    call green_border
+    ld bc, 64000
+    call delay
+
+ram_test
+    ld hl, 0x8000
+    ld de, 0x1000
+test
+    call black_border
+
+    ld a, 0xff
+    ld (hl), a
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    cp (hl)
+    jp nz, ram_test_failed
+
+    ld a, 0x55
+    ld (hl), a 
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    cp (hl)
+    jp nz, ram_test_failed
+
+    ld a, 0xaa
+    ld (hl), a 
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    cp (hl)
+    jp nz, ram_test_failed
+
+    ld a, 0x00
+    ld (hl), a 
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    cp (hl)
+    jp nz, ram_test_failed
+
+    call green_border
+    
+    inc hl
+    dec de
+
+    ld a, d
+    or e
+    jp nz, test
+    jp ram_test_end
+
+ram_test_failed
+    call red_border
+    jp ram_test
+    
+ram_test_end
 
 
 loop    
-
-
-    call key
-
-    ld de, startup_end - startup
-    ld hl, startup
-    call covox_8kHz
-
+    ld a, 0b00000000
+    out (0xfe), a
+    ld a, 0b00000001
+    out (0xfe), a
+    ld a, 0b00000010
+    out (0xfe), a
+    ld a, 0b00000011
+    out (0xfe), a
+    ld a, 0b00000100
+    out (0xfe), a
+    ld a, 0b00000101
+    out (0xfe), a
+    ld a, 0b00000110
+    out (0xfe), a
+    ld a, 0b00000111
+    out (0xfe), a
+    
     jp loop 
 
+white_border
+    ld a, 0b00000111
+    out (0xfe), a
+    ret
 
-key
-    ;halt
-    ;call led_loop
-    ld    a, 0x7e       ;в аккумулятор заносится старший байт адреса порта #7EFE
-    in    a, (0xfe)    ;считывание из порта (254 или #FE - младший байт адреса)
-    bit   2, a          ;проверка нажатия третьей от края клавиши (M)
-    jr    nz, key
+black_border
+    ld a, 0b00000000
+    out (0xfe), a
+    ld bc, 10
+    call delay
+    ret
+
+red_border
+    ld a, 0b00000010
+    out (0xfe), a
+    ld bc, 64000
+    call delay
+    ret
+
+green_border
+    ld a, 0b00000100
+    out (0xfe), a
+    ld bc, 10
+    call delay
     ret
 
 ; 
@@ -94,34 +210,6 @@ led_start
     call delay
     ret
 
-; 
-led_loop
-    ld a, 0b00000000
-    out (0xfe), a
-    ld bc, 10
-    call delay
-
-    ld a, 0b00000001
-    out (0xfe), a 
-    ld bc, 10
-    call delay
-
-    ld a, 0b00000010
-    out (0xfe), a 
-    ld bc, 10
-    call delay
-
-    ld a, 0b00000100
-    out (0xfe), a 
-    ld bc, 10
-    call delay  
-    ret
-
-    ld a, 0b00000111
-    out (0xfe), a 
-    ld bc, 10
-    call delay  
-    ret
 ; Процедура задержки
 delay
     dec bc
@@ -129,34 +217,6 @@ delay
     or c
     jr nz, delay
     ret
-
-port_covox  EQU 0xfb
-
-covox_8kHz 
-    di
-covox_8kHz_l
-    ld bc, 13
-    nop
-    nop
-    nop
-    nop
-    call delay
-    ld a, (hl)
-    out (port_covox), a
-    inc hl
-    dec de
-    ld a, d
-    or e
-    jr nz, covox_8kHz_l
-    ei
-    ret
-
-startup
-    ;incbin "tung.wav", 0x86+73000, 30000-8650
-    ;incbin "startup.wav", 0x86, 30000
-    ;incbin "tada.wav", 0x86
-startup_end
-
 
 end:
     ; Выводим размер банарника.

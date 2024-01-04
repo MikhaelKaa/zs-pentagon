@@ -132,7 +132,7 @@ module epm3256_igp_orig (
 	/******************** CPU ***********************/	
 	// CPU data bus
 	//assign D = CPU_RD?(8'bz):(MD);	
-	assign D = 8'bz;	
+	//assign D = 8'bz;	
 	
 	// CPU clock
 	assign CPU_CLK   = C25;
@@ -150,30 +150,41 @@ module epm3256_igp_orig (
 	/***************** BBSRAM 32kb ******************/	
 	assign BBSRAM_RD    = CPU_RD | A[15];
 	assign BBSRAM_WR    = STM32_BUSRQ?(CPU_WR | (A < 16'h4000) | A[15]):(CPU_WR | A[15]);
-	assign BBSRAM_MREQ  = CPU_MREQ | A[15]; 
-	// BBRAM data connect to cpu data
-	// BBRAM adr connect to cpu adr [14:0]
+	assign BBSRAM_MREQ  = CPU_MREQ | A[15] ;//| (A == 16'h7250); 
+	// BBSRAM data connect to cpu data
+	// BBSRAM adr connect to cpu adr [14:0]
 	
 	
 	/********** ext RAM W24257AK-20 32kb ************/
-	assign VA = A[14:0];
-	assign VD = 8'bz;//(CPU_WR | CPU_MREQ )?(8'bz):(D);
-	//assign D  = (CPU_RD | CPU_MREQ )?(8'bz):(VD);
-	assign VWR = CPU_WR | CPU_MREQ ;
+	wire ext_ram_cs =  CPU_MREQ | ~A[15];
+	wire ext_ram_rd =  CPU_RD | ext_ram_cs;
+	wire ext_ram_wr =  CPU_WR | ext_ram_cs;
 	
-	//assign VA = EX_RGBI_ADR;
-	////assign VD = 8'bz;
-	//assign VWR = pre_VWR;
+	assign VA  = A[14:0];
+	//assign D   = (ext_ram_rd == 1'b0) ? ext_ram_d : 8'bZ;
+	assign VD  = (ext_ram_wr == 1'b0) ? D  : 8'bZ;
+	assign VWR = ext_ram_wr;
+	
+	reg [7:0] ext_ram_d = 8'b0;
+	always @(negedge ext_ram_rd) begin
+		ext_ram_d <= D;
+	end
+
 	
 	
 	/***************** RAM 1024k ********************/	
-	// RAM address  
+	wire main_ram_cs =  CPU_MREQ | ~A[15];// | (A == 16'hb250);
+	wire main_ram_rd =  CPU_RD | main_ram_cs;
+	wire main_ram_wr =  CPU_WR | main_ram_cs;
+	
 	assign MA = {A, 3'b1};// 19'bx;
-	//assign MD = (CPU_WR | CPU_MREQ)?(8'bz):(D);
-	//assign D  = (CPU_RD | CPU_MREQ)?(8'bz):(MD);
-	assign WR_RAM  = 1'b1;//CPU_WR | CPU_MREQ;
-	assign CS_RAM0 = 1'b1;//CPU_MREQ;
-	assign CS_RAM1 = 1'b1;//CPU_MREQ;//~CS_RAM0;
+	
+	assign D   = (main_ram_rd == 1'b0) ? MD : 8'bZ;
+	assign MD  = (main_ram_wr == 1'b0) ? D  : 8'bZ;
+	assign WR_RAM  = main_ram_wr;
+	assign CS_RAM0 = main_ram_cs;
+	assign CS_RAM1 = main_ram_cs;
+	
 	
 	
 	/******************* ROM 512k *******************/
@@ -221,15 +232,12 @@ module epm3256_igp_orig (
 	wire iowr = CPU_IORQ | CPU_WR ;//| ~m1;
 	wire iord = CPU_IORQ | CPU_RD ;//| ~m1;
 	
-	// register fe (gpio)
+	// register fe
 	reg [7:0] reg_fe = 8'b0;
-	// register ff (PWM)
-	reg [7:0] reg_ff = 8'b0;
-	
 	always @(negedge iowr) begin
 		if(A[7:0] == 8'hfe) reg_fe = D;
 	end
-	
+	assign D = (~iord & (A[7:0] == 8'hfe))?reg_fe:8'bz;
 
 	// PSG <---- Deleted. This pins now BBSRAM RWIO.
 	//assign AYCLK = 1'bz;
@@ -264,242 +272,156 @@ module epm3256_igp_orig (
 	
 endmodule
 
-//set_location_assignment PIN_3 -to B
 /*
-set_location_assignment PIN_99 -to C_IODOS
-set_location_assignment PIN_98 -to CA6
-set_location_assignment PIN_97 -to CA7
-set_location_assignment PIN_96 -to C_M1
-set_location_assignment PIN_95 -to CA5
-set_location_assignment PIN_93 -to C_RFSH
-set_location_assignment PIN_92 -to CA4
-set_location_assignment PIN_91 -to CA8
+set_global_assignment -name FAMILY MAX3000A
+set_global_assignment -name DEVICE "EPM3512AQC208-10"
+set_global_assignment -name TOP_LEVEL_ENTITY epm3256_igp_orig
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:07:41  NOVEMBER 23, 2022"
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY build
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name MAX7000_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_location_assignment PIN_100 -to C_IODOS
+set_location_assignment PIN_98 -to A[6]
+set_location_assignment PIN_97 -to A[7]
+set_location_assignment PIN_96 -to CPU_M1
+set_location_assignment PIN_95 -to A[5]
+set_location_assignment PIN_93 -to CPU_RFSH
+set_location_assignment PIN_92 -to A[4]
+set_location_assignment PIN_91 -to A[8]
 set_location_assignment PIN_90 -to CS_ROM
-set_location_assignment PIN_9 -to KBD_CLK
-set_location_assignment PIN_89 -to CA10
-set_location_assignment PIN_87 -to CA11
-set_location_assignment PIN_86 -to CA9
-set_location_assignment PIN_81 -to MA2
-set_location_assignment PIN_79 -to MA1
-set_location_assignment PIN_78 -to MA10
-set_location_assignment PIN_77 -to MA3
-set_location_assignment PIN_76 -to MA4
-set_location_assignment PIN_73 -to MA11
-set_location_assignment PIN_71 -to MA5
-set_location_assignment PIN_70 -to MA9
-set_location_assignment PIN_7 -to HS
-set_location_assignment PIN_69 -to MA6
-set_location_assignment PIN_68 -to MA8
-set_location_assignment PIN_67 -to MA7
-set_location_assignment PIN_66 -to MA13
-set_location_assignment PIN_65 -to MA12
-set_location_assignment PIN_61 -to MD4
-set_location_assignment PIN_60 -to MD6
-set_location_assignment PIN_59 -to MD5
+set_location_assignment PIN_7 -to KBD_CLK
+set_location_assignment PIN_89 -to A[10]
+set_location_assignment PIN_87 -to A[11]
+set_location_assignment PIN_86 -to A[9]
+set_location_assignment PIN_81 -to MA[2]
+set_location_assignment PIN_79 -to MA[1]
+set_location_assignment PIN_78 -to MA[10]
+set_location_assignment PIN_77 -to MA[3]
+set_location_assignment PIN_76 -to MA[4]
+set_location_assignment PIN_71 -to MA[5]
+set_location_assignment PIN_70 -to MA[9]
+set_location_assignment PIN_8 -to HS
+set_location_assignment PIN_69 -to MA[6]
+set_location_assignment PIN_68 -to MA[8]
+set_location_assignment PIN_67 -to MA[7]
+set_location_assignment PIN_66 -to MA[13]
+set_location_assignment PIN_65 -to MA[12]
+set_location_assignment PIN_61 -to MD[4]
+set_location_assignment PIN_60 -to MD[6]
+set_location_assignment PIN_59 -to MD[5]
 set_location_assignment PIN_58 -to ROM_A15
 set_location_assignment PIN_55 -to RD_1F
-set_location_assignment PIN_49 -to WR_RAMMA11
-set_location_assignment PIN_48 -to MA14
-set_location_assignment PIN_47 -to CE_RAM2
-set_location_assignment PIN_46 -to MA16
-set_location_assignment PIN_45 -to MA15
-set_location_assignment PIN_43 -to MA0
-set_location_assignment PIN_42 -to MD7
-set_location_assignment PIN_4 -to VD1
+set_location_assignment PIN_48 -to WR_RAM
+set_location_assignment PIN_73 -to MA[11]
+set_location_assignment PIN_49 -to MA[14]
+set_location_assignment PIN_47 -to MA[16]
+set_location_assignment PIN_44 -to MA[15]
+set_location_assignment PIN_43 -to MA[0]
+set_location_assignment PIN_42 -to MD[7]
+set_location_assignment PIN_4 -to VGA[1]
 set_location_assignment PIN_39 -to RD_ROM
-set_location_assignment PIN_38 -to CS_RAML
-set_location_assignment PIN_37 -to MD0
+set_location_assignment PIN_37 -to MD[0]
 set_location_assignment PIN_36 -to ROM_A14
-set_location_assignment PIN_35 -to MD1
-set_location_assignment PIN_33 -to MD2
+set_location_assignment PIN_35 -to MD[1]
+set_location_assignment PIN_33 -to MD[2]
 set_location_assignment PIN_31 -to WR_ROM
 set_location_assignment PIN_3 -to KBD_DI
-set_location_assignment PIN_27 -to MD3
-set_location_assignment PIN_206 -to VD0
-set_location_assignment PIN_204 -to VD7
+set_location_assignment PIN_27 -to MD[3]
+set_location_assignment PIN_206 -to VGA[0]
+set_location_assignment PIN_204 -to VGA[7]
 set_location_assignment PIN_203 -to C_MAGIC
-set_location_assignment PIN_202 -to VD6
-set_location_assignment PIN_199 -to VD5
-set_location_assignment PIN_197 -to VD4
-set_location_assignment PIN_195 -to VD3
-set_location_assignment PIN_193 -to VD2
-set_location_assignment PIN_188 -to GI
+set_location_assignment PIN_202 -to VGA[6]
+set_location_assignment PIN_199 -to VGA[5]
+set_location_assignment PIN_197 -to VGA[4]
+set_location_assignment PIN_195 -to VGA[3]
+set_location_assignment PIN_193 -to VGA[2]
+set_location_assignment PIN_188 -to SGI
 set_location_assignment PIN_184 -to CLK_14MHZ
-set_location_assignment PIN_183 -to C_WR
-set_location_assignment PIN_182 -to C_RESET
-set_location_assignment PIN_181 -to C_MREQ
+set_location_assignment PIN_183 -to CPU_WR
+set_location_assignment PIN_182 -to CPU_RESET
+set_location_assignment PIN_181 -to CPU_MREQ
 set_location_assignment PIN_18 -to KBD_CS
 set_location_assignment PIN_178 -to TAPE_IN
-set_location_assignment PIN_177 -to BBSRAM_MREQ //AYCLK <---
-set_location_assignment PIN_175 -to CD2
-set_location_assignment PIN_173 -to CD0
+set_location_assignment PIN_175 -to D[2]
+set_location_assignment PIN_173 -to D[0]
 set_location_assignment PIN_172 -to C_BLK
-set_location_assignment PIN_171 -to CA12
+set_location_assignment PIN_171 -to A[12]
 set_location_assignment PIN_170 -to TAPE_OUT
-set_location_assignment PIN_169 -to BBSRAM_WR //BDIR <---
 set_location_assignment PIN_168 -to BEEP
-set_location_assignment PIN_167 -to BBSRAM_RD //BC1 <---
-set_location_assignment PIN_166 -to CA15
-set_location_assignment PIN_164 -to CA14
-set_location_assignment PIN_163 -to CA13
+set_location_assignment PIN_166 -to A[15]
+set_location_assignment PIN_164 -to A[14]
+set_location_assignment PIN_163 -to A[13]
 set_location_assignment PIN_162 -to VWR
-set_location_assignment PIN_161 -to CD7
-set_location_assignment PIN_160 -to PA13
+set_location_assignment PIN_161 -to D[7]
+set_location_assignment PIN_160 -to VA[13]
 set_location_assignment PIN_159 -to C_DOS
-set_location_assignment PIN_154 -to PA8
-set_location_assignment PIN_153 -to CD1
-set_location_assignment PIN_151 -to CD5
-set_location_assignment PIN_150 -to CD6
-set_location_assignment PIN_149 -to PA14
-set_location_assignment PIN_148 -to PA9
-set_location_assignment PIN_147 -to PA12
-set_location_assignment PIN_145 -to PA7
-set_location_assignment PIN_144 -to PA11
-set_location_assignment PIN_141 -to PA6
-set_location_assignment PIN_140 -to CA0
-set_location_assignment PIN_139 -to PA5
-set_location_assignment PIN_138 -to CA1
-set_location_assignment PIN_137 -to PA4
-set_location_assignment PIN_135 -to PA3
-set_location_assignment PIN_133 -to CA2
-set_location_assignment PIN_132 -to PA2
-set_location_assignment PIN_131 -to CA3
-set_location_assignment PIN_130 -to CD3
-set_location_assignment PIN_129 -to CD4
-set_location_assignment PIN_128 -to C_CLK
+set_location_assignment PIN_154 -to VA[8]
+set_location_assignment PIN_153 -to D[1]
+set_location_assignment PIN_151 -to D[5]
+set_location_assignment PIN_150 -to D[6]
+set_location_assignment PIN_149 -to VA[14]
+set_location_assignment PIN_148 -to VA[9]
+set_location_assignment PIN_147 -to VA[12]
+set_location_assignment PIN_145 -to VA[7]
+set_location_assignment PIN_144 -to VA[11]
+set_location_assignment PIN_141 -to VA[6]
+set_location_assignment PIN_140 -to A[0]
+set_location_assignment PIN_139 -to VA[5]
+set_location_assignment PIN_138 -to A[1]
+set_location_assignment PIN_137 -to VA[4]
+set_location_assignment PIN_135 -to VA[3]
+set_location_assignment PIN_133 -to A[2]
+set_location_assignment PIN_132 -to VA[2]
+set_location_assignment PIN_131 -to A[3]
+set_location_assignment PIN_130 -to D[3]
+set_location_assignment PIN_129 -to D[4]
+set_location_assignment PIN_128 -to CPU_CLK
 set_location_assignment PIN_126 -to C_IORQGE
-set_location_assignment PIN_124 -to PA1
-set_location_assignment PIN_122 -to PA0
-set_location_assignment PIN_120 -to PD0
-set_location_assignment PIN_118 -to PD1
-set_location_assignment PIN_117 -to C_INT
-set_location_assignment PIN_115 -to PD2
-set_location_assignment PIN_114 -to PD5
-set_location_assignment PIN_112 -to PD4
-set_location_assignment PIN_111 -to C_IORQ
-set_location_assignment PIN_110 -to PD3
-set_location_assignment PIN_109 -to C_BUSRQ
-set_location_assignment PIN_102 -to C_RD
-set_location_assignment PIN_101 -to C_WAIT
-set_location_assignment PIN_100 -to C_NMI
+set_location_assignment PIN_124 -to VA[1]
+set_location_assignment PIN_122 -to VA[0]
+set_location_assignment PIN_117 -to CPU_INT
+set_location_assignment PIN_111 -to CPU_IORQ
+set_location_assignment PIN_109 -to CPU_BUSRQ
+set_location_assignment PIN_102 -to CPU_RD
+set_location_assignment PIN_101 -to CPU_WAIT
+set_location_assignment PIN_99 -to CPU_NMI
 set_location_assignment PIN_10 -to VS
-
-output C_INT
-output C_IODOS
-output C_NMI
-output PA13
-output CE_RAM2
-output VWR
-output PA14
-output PA12
-output PA11
-output PA9
-output PA8
-output PA7
-output PA6
-output PA5
-output PA4
-output PA3
-output PA2
-output PA1
-output PA0
-inout  PD5
-inout  PD4
-inout  PD3
-inout  PD2
-inout  PD1
-inout  PD0
-output BDIR
-output BC1
-output AYCLK
-output C_BUSRQ
-output C_WAIT
-inout  MD7
-output MA0
-output MA15
-output MA16
-output MA14
-output WR_RAM
-inout  MD3
-input KBD_CLK
-output HS
-output RD_1F
-output VD7
-output VD6
-output VD5
-output VD4
-output VD3
-output VD2
-output VD1
-output VD0
-output GI
-input KBD_CS
-output CS_RAML
-inout  MD0
-output ROM_A14
-inout  MD1
-inout  MD2
-output WR_ROM
-output MA10
-output MA3
-output MA4
-output MA11
-output MA5
-output MA9
-output MA6
-output MA8
-output MA7
-output MA13
-input KBD_DI
-input C_MAGIC
-output VS
-output RD_ROM
-output MA12
-inout  MD4
-inout  MD6
-inout  MD5
-output ROM_A15
-inout  CD1
-output C_DOS
-inout  CD7
-input CA13
-input CA14
-input CA15
-inout  CD6
-inout  CD5
-input C_IORQ
-input CA4
-input C_RFSH
-input CA5
-input C_M1
-input CA7
-input CA6
-input C_RD
-output BEEP
-output TAPE_OUT
-input CA12
-output C_BLK
-inout  CD0
-inout  CD2
-input TAPE_IN
-inout  CD3
-input CA3
-input CA2
-input CA1
-input CA0
-input C_IORQGE
-output C_CLK
-inout  CD4
-output MA1
-output MA2
-input CA9
-input CA11
-input CA10
-output CS_ROM
-input CA8
-input C_WR
-input C_RESET
-input C_MREQ
-input CLK_14MHZ
+set_location_assignment PIN_120 -to VD[0]
+set_location_assignment PIN_118 -to VD[1]
+set_location_assignment PIN_115 -to VD[2]
+set_location_assignment PIN_114 -to VD[3]
+set_location_assignment PIN_112 -to VD[4]
+set_location_assignment PIN_110 -to VD[5]
+set_location_assignment PIN_136 -to VA[10]
+set_location_assignment PIN_13 -to EXT2
+set_location_assignment PIN_38 -to CS_RAM0
+set_location_assignment PIN_80 -to CS_RAM1
+set_location_assignment PIN_45 -to MA[17]
+set_location_assignment PIN_46 -to MA[18]
+set_location_assignment PIN_17 -to EXT3
+set_location_assignment PIN_205 -to C_PNT
+set_location_assignment PIN_201 -to C_TURBO
+set_global_assignment -name VERILOG_FILE src/epm3256_igp_orig.v
+set_global_assignment -name VERILOG_FILE src/logic74.v
+set_global_assignment -name VERILOG_FILE src/video.v
+set_global_assignment -name VERILOG_FILE src/test_pent_gen.v
+set_global_assignment -name VERILOG_FILE src/pent_logic_1.v
+set_global_assignment -name VERILOG_FILE src/pent_logic_0.v
+set_global_assignment -name VERILOG_FILE src/pent_log.v
+set_global_assignment -name VERILOG_FILE src/pent_gen.v
+set_location_assignment PIN_56 -to ROM_A16
+set_location_assignment PIN_34 -to ROM_A17
+set_location_assignment PIN_57 -to ROM_A18
+set_location_assignment PIN_169 -to BBSRAM_WR
+set_location_assignment PIN_167 -to BBSRAM_RD
+set_location_assignment PIN_177 -to BBSRAM_MREQ
+set_location_assignment PIN_121 -to EXT1
+set_location_assignment PIN_146 -to STM32_BUSRQ
+set_location_assignment PIN_119 -to VD[6]
+set_location_assignment PIN_123 -to VD[7]
 
 */
