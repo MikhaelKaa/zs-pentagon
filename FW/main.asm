@@ -4,6 +4,12 @@ begin:
     org 0x0000
     ; Запрещаем прерывания.
     di
+    di
+    di
+    im 1
+    nop
+    nop
+
     jp start
 
     org 0x0038
@@ -27,8 +33,8 @@ start
     
     ; Устанавливаем дно стека.
     ;ld sp, 0x6000
-    ld sp, 0x7ff7
-    ;ld sp, 0xa000
+    ;ld sp, 0x7ff7
+    ld sp, 0xffff
     ;ld sp, 0x3ff7
     ; Разрешаем прерывания.
     ;ei    ; <-- off, for debug
@@ -168,6 +174,8 @@ loop
     out (0xfe), a
     ld a, 0b00000111
     out (0xfe), a
+    ld bc, 1
+    call delay
     
     jp loop 
 

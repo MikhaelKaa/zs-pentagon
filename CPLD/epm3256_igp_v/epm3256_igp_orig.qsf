@@ -83,8 +83,8 @@ set_location_assignment PIN_73 -to MA[11]
 set_location_assignment PIN_49 -to MA[14]
 set_location_assignment PIN_47 -to MA[16]
 set_location_assignment PIN_44 -to MA[15]
-set_location_assignment PIN_43 -to MA[0]
-set_location_assignment PIN_42 -to MD[7]
+set_location_assignment PIN_42 -to MA[0]
+set_location_assignment PIN_43 -to MD[7]
 set_location_assignment PIN_4 -to VGA[1]
 set_location_assignment PIN_39 -to RD_ROM
 set_location_assignment PIN_37 -to MD[0]
@@ -93,7 +93,7 @@ set_location_assignment PIN_35 -to MD[1]
 set_location_assignment PIN_33 -to MD[2]
 set_location_assignment PIN_31 -to WR_ROM
 set_location_assignment PIN_3 -to KBD_DI
-set_location_assignment PIN_27 -to MD[3]
+set_location_assignment PIN_29 -to MD[3]
 set_location_assignment PIN_206 -to VGA[0]
 set_location_assignment PIN_204 -to VGA[7]
 set_location_assignment PIN_203 -to C_MAGIC
