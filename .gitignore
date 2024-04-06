@@ -65,3 +65,5 @@ db
 incremental_db
 /CPLD/epm3256_igp_v/epm3256_igp_orig.qws
 /FW/*.bin
+/CPLD/de0-nano/build
+/CPLD/de0-nano/de0-nano_description.txt
