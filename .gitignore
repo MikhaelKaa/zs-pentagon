@@ -67,3 +67,6 @@ incremental_db
 /FW/*.bin
 /CPLD/de0-nano/build
 /CPLD/de0-nano/de0-nano_description.txt
+/CPLD/epm3512_igp_v/build
+/CPLD/epm3256_igp_v
+/CPLD/epm3512_igp_v/epm3512_igp_orig_description.txt
