@@ -168,14 +168,6 @@ set_location_assignment PIN_46 -to MA[18]
 set_location_assignment PIN_17 -to EXT3
 set_location_assignment PIN_205 -to C_PNT
 set_location_assignment PIN_201 -to C_TURBO
-set_global_assignment -name VERILOG_FILE src/epm3256_igp_orig.v
-set_global_assignment -name VERILOG_FILE src/logic74.v
-set_global_assignment -name VERILOG_FILE src/video.v
-set_global_assignment -name VERILOG_FILE src/test_pent_gen.v
-set_global_assignment -name VERILOG_FILE src/pent_logic_1.v
-set_global_assignment -name VERILOG_FILE src/pent_logic_0.v
-set_global_assignment -name VERILOG_FILE src/pent_log.v
-set_global_assignment -name VERILOG_FILE src/pent_gen.v
 set_location_assignment PIN_56 -to ROM_A16
 set_location_assignment PIN_34 -to ROM_A17
 set_location_assignment PIN_57 -to ROM_A18
@@ -186,3 +178,4 @@ set_location_assignment PIN_121 -to EXT1
 set_location_assignment PIN_146 -to STM32_BUSRQ
 set_location_assignment PIN_119 -to VD[6]
 set_location_assignment PIN_123 -to VD[7]
+set_global_assignment -name VERILOG_FILE src/main.v

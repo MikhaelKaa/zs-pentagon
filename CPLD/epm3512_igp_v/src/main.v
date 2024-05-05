@@ -57,7 +57,7 @@ module epm3512_igp_orig (
 	input 	C_IORQGE,
 	output 	C_BLK,
 
-	//
+	// ext ram 32k
 	output [14:0]VA,
 	inout [7:0]VD, // [5:0] ->> [7:0] ?
 	output VWR,
@@ -98,9 +98,9 @@ module epm3512_igp_orig (
 	parameter _3500kHz = 1;
 	reg [7:0] clock_table = 8'b0;
 		always @(negedge CLK_14MHZ) begin
-		clock_table <= clock_table +1;
+		clock_table <= clock_table + 1'b1;
 	end
-	assign CPU_CLK   =  port_0xeff7[0]?(CLK_14MHZ):((turbo)?(clock_table[_3500kHz]):(clock_table[_7000kHz])); 
+	assign CPU_CLK = (turbo)?(clock_table[_3500kHz]):(clock_table[_7000kHz]); 
 	
 	
 	// Port 0xeff7
@@ -113,6 +113,20 @@ module epm3512_igp_orig (
 			if(A == 16'heff7) port_0xeff7 <= D;
 		end		
 	end
+	// read 0xeff7
+	assign D = (iord == 0 & A == 16'heff7)?(port_0xeff7):(8'bz);
+	
+	// Port 0x7ffd
+	reg [7:0] port_0x7ffd = 8'b0;
+	// write 0x7ffd
+	always @(negedge iowr or negedge CPU_RESET) begin
+		if(!CPU_RESET) port_0x7ffd <= 0;
+		else begin
+			if(A == 16'h7ffd) port_0x7ffd <= D;
+		end		
+	end
+	// read 0x7ffd
+	assign D = (iord == 0 & A == 16'h7ffd)?(port_0x7ffd):(8'bz);
 	
 	
 	// TODO: NMI IODOS перепутаны
@@ -134,19 +148,21 @@ module epm3512_igp_orig (
 	
 	
 	/********** ext RAM W24257AK-20 32kb ************/
-	wire ext_ram_cs =  1'b1;//CPU_MREQ | ~A[15];
-	wire ext_ram_rd =  1'b1;//CPU_RD | ext_ram_cs;
-	wire ext_ram_wr =  1'b1;//CPU_WR | ext_ram_cs;
+	wire ext_ram_cs =  CPU_MREQ | ~A[15];// | (A == 16'h8005) | (A == 16'hfffa);
+	wire ext_ram_rd =  CPU_RD | ext_ram_cs;
+	wire ext_ram_wr =  CPU_WR | ext_ram_cs;
+	wire cpu_dis = port_0xeff7[0];
+
 	
-	assign VA  = A[14:0];
-	//assign D   = (ext_ram_rd == 1'b0) ? ext_ram_d : 8'bZ;
+	assign VA  = cpu_dis?(A[14:0]):(extv_adr);
+	assign D   = cpu_dis?((ext_ram_rd == 1'b0) ? VD : 8'bZ):(8'bZ);
 	assign VD  = (ext_ram_wr == 1'b0) ? D  : 8'bZ;
-	assign VWR = ext_ram_wr;
+	assign VWR = cpu_dis?(ext_ram_wr):(1'b1);
 	
-	reg [7:0] ext_ram_d = 8'b0;
-	always @(negedge ext_ram_rd) begin
-		ext_ram_d <= D;
-	end
+	//reg [7:0] ext_ram_d = 8'b0;
+	//always @(negedge ext_ram_rd) begin
+		//ext_ram_d <= D;
+	//end
 
 	
 	
@@ -176,11 +192,50 @@ module epm3512_igp_orig (
 	assign RD_ROM = 1'b1;//CPU_MREQ | C13;  //OE
 	assign CS_ROM = 1'b1;//CPU_RD;
 	
-
+	/***************** Ext Video ********************/	
+	reg [9:0] vsync_cnt = 10'b0;
+	reg vsync = 1'b0;
+	always @(negedge CLK_14MHZ) begin
+		if(vsync_cnt == 896-1) begin
+			vsync_cnt <= 1'b0;
+		end else begin
+			vsync_cnt <= vsync_cnt + 1'b1;
+		end
+		
+		if(vsync_cnt < 66) vsync <= 1'b0;
+		else vsync <= 1'b1;
+	end
+	
+	reg [8:0] hsync_cnt = 1'b0;
+	reg hsync = 1'b0;
+	always @(negedge vsync) begin
+		if(hsync_cnt == 320-1) begin
+			hsync_cnt <= 1'b0;
+		end else begin
+			hsync_cnt <= hsync_cnt + 1'b1;
+		end
+		
+		if(hsync_cnt < 15) hsync <= 1'b0;
+		else hsync <= 1'b1;
+	end
+	
+	reg [13:0] extv_adr = 14'b0;
+	always @(negedge CLK_14MHZ) begin
+		if(hsync_cnt == 0 & vsync_cnt == 0) extv_adr <= 14'b0;
+		else if(hsync == 1 & vsync == 1) extv_adr <= extv_adr + 1'b1;
+	end
+	
+	
+	assign SYNC = hsync ^ ~vsync;
+	assign R = SYNC?(cpu_dis?(1'b0):(VD[0])):(1'b0);
+	assign G = SYNC?(cpu_dis?(1'b0):(VD[1])):(1'b0);
+	assign B = SYNC?(cpu_dis?(1'b0):(VD[2])):(1'b0);
+	assign I = SYNC?(cpu_dis?(1'b0):(VD[3])):(1'b0);
+	
 	/**************** Video output ******************/	
+	wire R, G, B, I, SYNC;
+	wire TAPEOUT, SOUND;
 	assign VGA = {1'b0, I, G, 1'b0, I, R, I, B};
-	//                  I               G                     I               R               I               B
-	//assign VGA = {1'b0, EX_RGBI_PIX[0], EX_RGBI_PIX[2], 1'b0, EX_RGBI_PIX[0], EX_RGBI_PIX[3], EX_RGBI_PIX[0], EX_RGBI_PIX[1]};
 	// Vertical sync
 	assign VS = SYNC;
 	// TODO: in Jasper this pin use to enable scart
@@ -224,10 +279,6 @@ module epm3512_igp_orig (
 
 	// CPU reset
 	wire C39 = CPU_RESET;
-	
-	wire R, G, B, I, SYNC;
-	wire TAPEOUT, SOUND;
-	
 	
 endmodule
 

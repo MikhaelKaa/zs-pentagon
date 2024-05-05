@@ -18,6 +18,9 @@ static volatile char irq_0x38_flag = 0;
 static volatile char nmi_0x66_flag = 0;
 char msg[] = "Hello world!!!\r\n";
 
+void check_turbo(void);
+void check_read_port(void);
+void check_mem(void);
 
 
 void main() {
@@ -26,16 +29,18 @@ void main() {
     init_screen();
     uart_print("\r\n\r\n***********************\r\n");
     uart_print("init 0\r\n");
-    for(char n = 0; n < 8; n++) {
-        uart_print("port_0xeff7 = 0x00 (7000kHz CPU clock)\r\n");
-        port_0xeff7 = 0x00;
-        delay(32768);
-        
-        uart_print("port_0xeff7 = 0x10 (3500kHz CPU clock)\r\n");
-        port_0xeff7 = 0x10; 
-        delay(16384);     
-    }
-    uart_print("test end\r\n");
+
+    //check_turbo();
+    // uart_print("port_0xeff7 = 0x10 (3500kHz CPU clock)\r\n");
+    // port_0xeff7 = 0x10; 
+    //check_read_port();
+    check_mem();
+    uart_print("port_0xeff7 = 0x01\r\n");
+    port_0xeff7 = 0x01;
+    check_mem();
+    uart_print("port_0xeff7 = 0x00\r\n");
+    port_0xeff7 = 0x00;
+
     //print(10, 10, msg);
 
     // PSG init
@@ -49,23 +54,80 @@ void main() {
         //*(screen + 4) = key[0];
         //*(screen + 6) = key[1];
 
-        if(irq_0x38_flag) {
-            irq_0x38_flag = 0;
-            *(screen + 0) = i++;
-            port_0xfffd = 0x00;
-            port_0xbffd = i;
-        }
+        // if(irq_0x38_flag) {
+        //     irq_0x38_flag = 0;
+        //     *(screen + 0) = i++;
+        //     port_0xfffd = 0x00;
+        //     port_0xbffd = i;
+        // }
 
-        if(nmi_0x66_flag) {
-            nmi_0x66_flag = 0;
-            *(screen + 2) = i;
-        }
+        // if(nmi_0x66_flag) {
+        //     nmi_0x66_flag = 0;
+        //     *(screen + 2) = i;
+        // }
 
         char tmp[] = " ";
         //uart_get(&tmp);
         if(uart_get(&tmp[0]) == 0) {
             uart_print(tmp);
-            print(0, 1, tmp);
+            switch (tmp[0])
+            {
+            case '1':
+                    uart_print("port_0xeff7 = 0x01\r\n");
+                    port_0xeff7 = 0x01;
+                break;
+            case '2':
+                    uart_print("port_0xeff7 = 0x00\r\n");
+                    port_0xeff7 = 0x00;
+                break;  
+            case '3':
+                    uart_print("check_mem\r\n");
+                    check_mem();
+                break;
+            case '4':
+                    uart_print("port_0xeff7 = 0x01\r\n");
+                    port_0xeff7 = 0x01;
+                    uart_print("fill video mem 0x00\r\n");
+                    for(unsigned int r = 0x8000; r < 0xffff; r++) {
+                        *(char*)r = (char)0x00;
+                    }
+                    uart_print("port_0xeff7 = 0x00\r\n");
+                    port_0xeff7 = 0x00;
+                break;
+            case '5':
+                    uart_print("port_0xeff7 = 0x01\r\n");
+                    port_0xeff7 = 0x01;
+                    uart_print("fill video mem 0xff\r\n");
+                    for(unsigned int r = 0x8000; r < 0xffff; r++) {
+                        *(char*)r = (char)0xff;
+                    }
+                    uart_print("port_0xeff7 = 0x00\r\n");
+                    port_0xeff7 = 0x00;
+                break;
+            case '6':
+                    uart_print("port_0xeff7 = 0x01\r\n");
+                    port_0xeff7 = 0x01;
+                    uart_print("fill video mem 0x55\r\n");
+                    for(unsigned int r = 0x8000; r < 0xffff; r++) {
+                        *((char*)r) = (char)0x55;
+                    }
+                    uart_print("port_0xeff7 = 0x00\r\n");
+                    port_0xeff7 = 0x00;
+                break;
+            case '7':
+                    uart_print("port_0xeff7 = 0x01\r\n");
+                    port_0xeff7 = 0x01;
+                    uart_print("fill video mem r\r\n");
+                    for(unsigned int r = 0x8000; r < 0xffff; r++) {
+                        *(char*)r = (char)r;
+                    }
+                    uart_print("port_0xeff7 = 0x00\r\n");
+                    port_0xeff7 = 0x00;
+                break;
+            default:
+                break;
+            }
+            //print(0, 1, tmp);
         } 
     }
 }
@@ -103,4 +165,77 @@ volatile void nmi_0x66(void) {
     nmi_0x66_flag = 1;
 }
 
-// https://gist.github.com/Konamiman/af5645b9998c802753023cf1be8a2970
+
+void check_turbo(void) {
+    for(char n = 0; n < 8; n++) {
+        uart_print("port_0xeff7 = 0x00 (7000kHz CPU clock)\r\n");
+        port_0xeff7 = 0x00;
+        delay(32768);
+        
+        uart_print("port_0xeff7 = 0x10 (3500kHz CPU clock)\r\n");
+        port_0xeff7 = 0x10; 
+        delay(16384);     
+    }
+    uart_print("cpu clock test end\r\n");
+}
+
+void check_read_port(void) {
+    uart_print("write 0xeff7 0xff\r\n");
+    port_0xeff7 = 0xff;
+    uart_print("read 0xeff7");
+    if(port_0xeff7 != 0xff) uart_print(" FAIL\r\n");
+    else uart_print(" OK\r\n");
+
+    uart_print("write 0xeff7 0x00\r\n");
+    port_0xeff7 = 0x00;
+    uart_print("read 0xeff7");
+    if(port_0xeff7 != 0x00) uart_print(" FAIL\r\n");
+    else uart_print(" OK\r\n");
+    uart_print("\r\n");
+}
+
+void check_mem(void) {
+
+    uart_print("write @ 0x3fff 0x55\r\n");
+    *(char*)0x3fff = 0x55;
+    uart_print("read @ 0x3fff");
+    if(*(char*)0x3fff == 0x55) uart_print(" OK\r\n");
+    else uart_print(" FAIL\r\n");
+    uart_print("\r\n");
+
+    uart_print("write @ 0x8000 0x55\r\n");
+    *(char*)0x8000 = 0x55;
+    uart_print("read @ 0x8000");
+    if(*(char*)0x8000 == 0x55) uart_print(" OK\r\n");
+    else uart_print(" FAIL\r\n");
+    uart_print("\r\n");
+
+    uart_print("write @ 0x8004 0x55\r\n");
+    *(char*)0x8004 = 0x55;
+    uart_print("read @ 0x8004");
+    if(*(char*)0x8004 == 0x55) uart_print(" OK\r\n");
+    else uart_print(" FAIL\r\n");
+    uart_print("\r\n");
+
+    uart_print("write @ 0x8005 0x55\r\n");
+    *(char*)0x8005 = 0x55;
+    uart_print("read @ 0x8005");
+    if(*(char*)0x8005 == 0x55) uart_print(" OK\r\n");
+    else uart_print(" FAIL\r\n");
+    uart_print("\r\n");
+
+    uart_print("write @ 0x8006 0x55\r\n");
+    *(char*)0x8006 = 0x55;
+    uart_print("read @ 0x8006");
+    if(*(char*)0x8006 == 0x55) uart_print(" OK\r\n");
+    else uart_print(" FAIL\r\n");
+    uart_print("\r\n");
+
+    for(unsigned int r = 0x8000; r < 0xffff; r++) {
+        *(char*)r = (char)r;
+        //if(*(char*)r != 0x55) uart_print("*");
+    }
+    uart_print("\r\n"); 
+    uart_print("RAM test end\r\n"); 
+}
+
