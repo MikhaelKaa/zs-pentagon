@@ -96,6 +96,8 @@ module epm3512_igp_orig (
 	// CPU clock
 	parameter _7000kHz = 0;
 	parameter _3500kHz = 1;
+	parameter _1750kHz = 2;
+	
 	reg [7:0] clock_table = 8'b0;
 		always @(negedge CLK_14MHZ) begin
 		clock_table <= clock_table + 1'b1;
@@ -195,6 +197,8 @@ module epm3512_igp_orig (
 	/***************** Ext Video ********************/	
 	reg [9:0] vsync_cnt = 10'b0;
 	reg vsync = 1'b0;
+	reg vblank = 1'b0;
+	reg extv_adr_clr = 1'b0;
 	always @(negedge CLK_14MHZ) begin
 		if(vsync_cnt == 896-1) begin
 			vsync_cnt <= 1'b0;
@@ -204,6 +208,9 @@ module epm3512_igp_orig (
 		
 		if(vsync_cnt < 66) vsync <= 1'b0;
 		else vsync <= 1'b1;
+		if(vsync_cnt < 132) vblank <= 1'b0;
+		else vblank <= 1'b1;		
+		extv_adr_clr = ~(hsync_cnt == 0 & vsync_cnt == 0);
 	end
 	
 	reg [8:0] hsync_cnt = 1'b0;
@@ -219,18 +226,18 @@ module epm3512_igp_orig (
 		else hsync <= 1'b1;
 	end
 	
-	reg [13:0] extv_adr = 14'b0;
-	always @(negedge CLK_14MHZ) begin
-		if(hsync_cnt == 0 & vsync_cnt == 0) extv_adr <= 14'b0;
-		else if(hsync == 1 & vsync == 1) extv_adr <= extv_adr + 1'b1;
+	reg [14:0] extv_adr = 15'b0;
+	always @(negedge clock_table[_3500kHz] or negedge extv_adr_clr) begin
+		if(extv_adr_clr == 0) extv_adr <= 15'b0;
+		else if(hsync == 1 & vsync == 1) extv_adr = extv_adr + 1'b1;
 	end
 	
 	
 	assign SYNC = hsync ^ ~vsync;
-	assign R = SYNC?(cpu_dis?(1'b0):(VD[0])):(1'b0);
-	assign G = SYNC?(cpu_dis?(1'b0):(VD[1])):(1'b0);
-	assign B = SYNC?(cpu_dis?(1'b0):(VD[2])):(1'b0);
-	assign I = SYNC?(cpu_dis?(1'b0):(VD[3])):(1'b0);
+	assign R = vblank?(cpu_dis?(1'b0):(clock_table[_3500kHz]?(VD[0]):(VD[4]))):(1'b0);
+	assign G = vblank?(cpu_dis?(1'b0):(clock_table[_3500kHz]?(VD[1]):(VD[5]))):(1'b0);
+	assign B = vblank?(cpu_dis?(1'b0):(clock_table[_3500kHz]?(VD[2]):(VD[6]))):(1'b0);
+	assign I = vblank?(cpu_dis?(1'b0):(clock_table[_3500kHz]?(VD[3]):(VD[7]))):(1'b0);
 	
 	/**************** Video output ******************/	
 	wire R, G, B, I, SYNC;

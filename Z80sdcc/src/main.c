@@ -21,7 +21,7 @@ char msg[] = "Hello world!!!\r\n";
 void check_turbo(void);
 void check_read_port(void);
 void check_mem(void);
-
+static int offset = 0;
 
 void main() {
     port_0x7ffd = 0x00;
@@ -97,9 +97,13 @@ void main() {
             case '5':
                     uart_print("port_0xeff7 = 0x01\r\n");
                     port_0xeff7 = 0x01;
-                    uart_print("fill video mem 0xff\r\n");
+                    uart_print("fill video mem pattern\r\n");
                     for(unsigned int r = 0x8000; r < 0xffff; r++) {
-                        *(char*)r = (char)0xff;
+                        *(char*)r = (char)0x00;
+                    }
+                    for(unsigned int r = 0x9000; r < 0xa000; r++) {
+                        if(r&1) *(char*)r = (char)0xff;
+                        else *(char*)r = (char)0x00;
                     }
                     uart_print("port_0xeff7 = 0x00\r\n");
                     port_0xeff7 = 0x00;
@@ -124,6 +128,43 @@ void main() {
                     uart_print("port_0xeff7 = 0x00\r\n");
                     port_0xeff7 = 0x00;
                 break;
+            case '8':
+                    uart_print("port_0xeff7 = 0x01\r\n");
+                    port_0xeff7 = 0x01;
+                    uart_print("fill video mem 0x00\r\n");
+                    for(unsigned int r = 0x8000; r != 0xffff; r++) {
+                        *(char*)r = (char)0x00;
+                    }
+                    *(char*)0xffff = (char)0x00;
+                    uart_print("set dots\r\n");
+                    *(char*)(0x9000+offset) = 0x74;
+                    *(char*)(0x9001+offset) = 0x10;
+                    // *(char*)(0x9002+offset) = 0x00;
+                    // *(char*)(0x9004+offset) = 0x02;
+                    // *(char*)(0x9006+offset) = 0x04;
+                    // *(char*)(0x9008+offset) = 0x0f;
+                    // *(char*)(0x900a+offset) = 0x0f;
+                    
+                    uart_print("port_0xeff7 = 0x00\r\n");
+                    port_0xeff7 = 0x00;
+                break;
+
+            case 'z':
+                offset--;
+                break;
+
+            case 'x':
+                offset++;
+                break;
+
+            case 'c':
+                offset -= 0x400 ;
+                break;
+
+            case 'v':
+                offset += 0x400;
+                break;
+
             default:
                 break;
             }
